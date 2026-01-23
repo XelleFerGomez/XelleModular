@@ -1,12 +1,10 @@
 /**
- * FORMAT-APP-COMERCIAL.JS
- * Módulo exclusivo para Ventas y Operaciones Comerciales.
- * Independiente del sistema de Laboratorio (FO-LC).
+ * FORMAT-APP-COMERCIAL.JS - V2.0
+ * Módulo Comercial: Pedido (15) -> Surtido (16) -> Remisión (17)
  */
 
 const AppCom = {
     config: {
-        // Base de datos de productos comerciales
         DB_PRODUCTS: {
             "Stem Xelle": { lotPre: "XCM", pres: ["10 M", "25 M", "50 M", "100 M"] },
             "Hybrid Xelle": { lotPre: "XHY", pres: ["10M + 1B", "25M + 2B", "50M + 5B", "60M + 6B", "100M + 10B"] },
@@ -18,16 +16,17 @@ const AppCom = {
 
     init: function() {
         const docId = document.body.id;
-        console.log("Iniciando App Comercial para:", docId);
+        console.log("Iniciando App Comercial V2 para:", docId);
         
         this.Universal.setupDateInputs();
         this.Universal.setupBarcodes();
         this.Universal.loadData(docId);
         this.Universal.setupPrintHandler();
 
-        // Inicialización específica del formato
-        if (docId === 'doc-fo-op-15') {
-            this.FO_OP_15.init();
+        switch(docId) {
+            case 'doc-fo-op-15': this.FO_OP_15.init(); break;
+            case 'doc-fo-op-16': this.FO_OP_16.init(); break;
+            case 'doc-fo-op-17': this.FO_OP_17.init(); break;
         }
     },
 
@@ -65,10 +64,6 @@ const AppCom = {
                 });
             });
         },
-        autoResize: function(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
-        },
         saveData: function() {
             const docId = document.body.id;
             const data = {};
@@ -79,9 +74,9 @@ const AppCom = {
                     else data[el.id || el.name] = el.value;
                 }
             });
-            // Guardar datos custom
-            if (docId === 'doc-fo-op-15') {
-                Object.assign(data, AppCom.FO_OP_15.getCustomData());
+            const modName = docId.replace(/-/g, '_').toUpperCase().replace('DOC_', '');
+            if (AppCom[modName] && AppCom[modName].getCustomData) {
+                Object.assign(data, AppCom[modName].getCustomData());
             }
             localStorage.setItem(`xelle_comercial_${docId}`, JSON.stringify(data));
             Swal.fire({ icon: 'success', title: 'Guardado', timer: 1000, showConfirmButton: false });
@@ -102,93 +97,105 @@ const AppCom = {
                     el.dispatchEvent(new Event('change')); 
                 }
             }
-            if (docId === 'doc-fo-op-15') AppCom.FO_OP_15.loadCustomData(data);
+            const modName = docId.replace(/-/g, '_').toUpperCase().replace('DOC_', '');
+            if (AppCom[modName] && AppCom[modName].loadCustomData) {
+                AppCom[modName].loadCustomData(data);
+            }
         },
         clearForm: function() {
-            Swal.fire({
-                title: '¿Limpiar todo?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Sí'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    localStorage.removeItem(`xelle_comercial_${document.body.id}`);
-                    location.reload();
-                }
+            Swal.fire({ title: '¿Limpiar todo?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Sí' }).then((result) => {
+                if (result.isConfirmed) { localStorage.removeItem(`xelle_comercial_${document.body.id}`); location.reload(); }
             });
         },
-        printForm: function() { window.print(); }
+        printForm: function() { window.print(); },
+        fillProdSelect: function(selectElement) {
+            const prods = Object.keys(AppCom.config.DB_PRODUCTS).map(p => `<option value="${p}">${p}</option>`).join('');
+            selectElement.innerHTML = `<option value="">Seleccionar...</option>${prods}`;
+        },
+        onProdChange: function(selectElement) {
+            const row = selectElement.closest('tr');
+            const val = selectElement.value;
+            const presSelect = row.querySelector('.pres-select');
+            if(!presSelect) return;
+            presSelect.innerHTML = '<option>-</option>';
+            if(val && AppCom.config.DB_PRODUCTS[val]) {
+                AppCom.config.DB_PRODUCTS[val].pres.forEach(p => { presSelect.add(new Option(p, p)); });
+            }
+        }
     },
 
-    // --- MÓDULO OP-15: REGISTRO DE PEDIDOS ---
+    // --- FO-OP-15: PEDIDO MAESTRO ---
     FO_OP_15: {
-        init: function() {
-            if(document.querySelector('#tbl-pedidos tbody').children.length === 0) {
-                this.addPedidoRow();
-            }
-        },
+        init: function() { if(document.querySelector('#tbl-pedidos tbody').children.length===0) this.addPedidoRow(); },
         addPedidoRow: function() {
-            const tbody = document.querySelector('#tbl-pedidos tbody');
-            const row = document.createElement('tr');
-            const prods = Object.keys(AppCom.config.DB_PRODUCTS).map(p => `<option value="${p}">${p}</option>`).join('');
-            
-            row.innerHTML = `
-                <td><input type="number" class="cedit" style="text-align:center;"></td>
-                <td><select class="cedit prod-select" onchange="AppCom.FO_OP_15.onProd(this)"><option value="">Seleccionar...</option>${prods}</select></td>
-                <td><select class="cedit pres-select"><option>-</option></select></td>
-                <td><input class="cedit"></td>
-                <td><input type="date" class="cedit"></td>
-                <td class="no-print"><button class="btn btn-danger btn-mini" onclick="this.closest('tr').remove()">x</button></td>
-            `;
-            tbody.appendChild(row);
-        },
-        onProd: function(select) {
-            const row = select.closest('tr');
-            const val = select.value;
-            const presSelect = row.querySelector('.pres-select');
-            presSelect.innerHTML = '<option>-</option>';
-            
-            if(val && AppCom.config.DB_PRODUCTS[val]) {
-                AppCom.config.DB_PRODUCTS[val].pres.forEach(p => {
-                    presSelect.add(new Option(p, p));
-                });
-            }
+            const r = document.createElement('tr');
+            r.innerHTML = `<td><input type="number" class="cedit text-center"></td>
+                           <td><select class="cedit prod-select" onchange="AppCom.Universal.onProdChange(this)"></select></td>
+                           <td><select class="cedit pres-select"><option>-</option></select></td>
+                           <td><select class="cedit"><option>Stock (Almacén)</option><option>Producción (Lab)</option></select></td>
+                           <td><input type="date" class="cedit"></td>
+                           <td class="no-print"><button class="btn btn-danger btn-mini" onclick="this.closest('tr').remove()">x</button></td>`;
+            document.querySelector('#tbl-pedidos tbody').appendChild(r);
+            AppCom.Universal.fillProdSelect(r.querySelector('.prod-select'));
         },
         getCustomData: function() {
-            const rows = [];
-            document.querySelectorAll('#tbl-pedidos tbody tr').forEach(r => {
-                const inputs = r.querySelectorAll('input, select');
-                rows.push({
-                    cant: inputs[0].value,
-                    prod: inputs[1].value,
-                    pres: inputs[2].value,
-                    lote: inputs[3].value,
-                    cad: inputs[4].value
-                });
-            });
-            return { t_pedidos: rows };
+            const r=[]; document.querySelectorAll('#tbl-pedidos tbody tr').forEach(tr=>{ const i=tr.querySelectorAll('input, select'); r.push({c:i[0].value, p:i[1].value, pr:i[2].value, o:i[3].value, f:i[4].value}); }); return {t_ped:r};
         },
-        loadCustomData: function(data) {
-            if(data.t_pedidos) {
-                const tbody = document.querySelector('#tbl-pedidos tbody');
-                tbody.innerHTML = '';
-                data.t_pedidos.forEach(item => {
-                    this.addPedidoRow();
-                    const r = tbody.lastElementChild;
-                    const inputs = r.querySelectorAll('input, select');
-                    inputs[0].value = item.cant;
-                    inputs[1].value = item.prod;
-                    this.onProd(inputs[1]); 
-                    inputs[2].value = item.pres;
-                    inputs[3].value = item.lote;
-                    inputs[4].value = item.cad;
-                });
-            }
+        loadCustomData: function(d) {
+            if(d.t_ped) { const tb=document.querySelector('#tbl-pedidos tbody'); tb.innerHTML=''; d.t_ped.forEach(x=>{ this.addPedidoRow(); const i=tb.lastElementChild.querySelectorAll('input, select'); i[0].value=x.c; i[1].value=x.p; AppCom.Universal.onProdChange(i[1]); i[2].value=x.pr; i[3].value=x.o; i[4].value=x.f; }); }
+        }
+    },
+
+    // --- FO-OP-16: SURTIDO ---
+    FO_OP_16: {
+        init: function() { if(document.querySelector('#tbl-picking tbody').children.length===0) this.addPickingRow(); },
+        addPickingRow: function() {
+            const r = document.createElement('tr');
+            r.innerHTML = `<td><select class="cedit prod-select" onchange="AppCom.Universal.onProdChange(this)"></select></td>
+                           <td><select class="cedit pres-select"><option>-</option></select></td>
+                           <td><input class="cedit" placeholder="Ubicación"></td>
+                           <td><input class="cedit" placeholder="Lote"></td>
+                           <td><input type="number" class="cedit text-center"></td>
+                           <td><input type="number" class="cedit text-center"></td>
+                           <td class="no-print"><button class="btn btn-danger btn-mini" onclick="this.closest('tr').remove()">x</button></td>`;
+            document.querySelector('#tbl-picking tbody').appendChild(r);
+            AppCom.Universal.fillProdSelect(r.querySelector('.prod-select'));
+        },
+        getCustomData: function() {
+            const r=[]; document.querySelectorAll('#tbl-picking tbody tr').forEach(tr=>{ const i=tr.querySelectorAll('input, select'); r.push({p:i[0].value, pr:i[1].value, u:i[2].value, l:i[3].value, cr:i[4].value, cs:i[5].value}); }); return {t_pick:r};
+        },
+        loadCustomData: function(d) {
+            if(d.t_pick) { const tb=document.querySelector('#tbl-picking tbody'); tb.innerHTML=''; d.t_pick.forEach(x=>{ this.addPickingRow(); const i=tb.lastElementChild.querySelectorAll('input, select'); i[0].value=x.p; AppCom.Universal.onProdChange(i[0]); i[1].value=x.pr; i[2].value=x.u; i[3].value=x.l; i[4].value=x.cr; i[5].value=x.cs; }); }
+        }
+    },
+
+    // --- FO-OP-17: REMISIÓN ---
+    FO_OP_17: {
+        init: function() { if(document.querySelector('#tbl-remision tbody').children.length===0) this.addRemisionRow(); },
+        addRemisionRow: function() {
+            const r = document.createElement('tr');
+            r.innerHTML = `<td><input type="number" class="cedit text-center"></td>
+                           <td><select class="cedit prod-select" onchange="AppCom.Universal.onProdChange(this)"></select></td>
+                           <td><select class="cedit pres-select"><option>-</option></select></td>
+                           <td><input class="cedit"></td>
+                           <td><input class="cedit"></td>
+                           <td class="no-print"><button class="btn btn-danger btn-mini" onclick="this.closest('tr').remove()">x</button></td>`;
+            document.querySelector('#tbl-remision tbody').appendChild(r);
+            AppCom.Universal.fillProdSelect(r.querySelector('.prod-select'));
+        },
+        getCustomData: function() {
+            const r=[]; document.querySelectorAll('#tbl-remision tbody tr').forEach(tr=>{ const i=tr.querySelectorAll('input, select'); r.push({c:i[0].value, p:i[1].value, pr:i[2].value, l:i[3].value, cad:i[4].value}); }); return {t_rem:r};
+        },
+        loadCustomData: function(d) {
+            if(d.t_rem) { const tb=document.querySelector('#tbl-remision tbody'); tb.innerHTML=''; d.t_rem.forEach(x=>{ this.addRemisionRow(); const i=tb.lastElementChild.querySelectorAll('input, select'); i[0].value=x.c; i[1].value=x.p; AppCom.Universal.onProdChange(i[1]); i[2].value=x.pr; i[3].value=x.l; i[4].value=x.cad; }); }
         }
     }
 };
 
 document.addEventListener('DOMContentLoaded', ()=>AppCom.init());
-
-// Funciones globales para botones HTML
 window.saveForm = () => AppCom.Universal.saveData(); 
 window.printForm = () => AppCom.Universal.printForm(); 
 window.clearForm = () => AppCom.Universal.clearForm(); 
 window.addPedidoRow = () => AppCom.FO_OP_15.addPedidoRow();
+window.addPickingRow = () => AppCom.FO_OP_16.addPickingRow();
+window.addRemisionRow = () => AppCom.FO_OP_17.addRemisionRow();

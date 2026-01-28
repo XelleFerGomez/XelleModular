@@ -4,18 +4,18 @@
 (function checkAuth() {
     const session = localStorage.getItem('lims_user_session');
     if (!session) {
-        window.location.href = 'login.html';
+        if (!window.location.pathname.includes('login.html')) {
+            window.location.href = 'login.html';
+        }
     } else {
         const sessionData = JSON.parse(session);
         const now = new Date().getTime();
-        // 24 horas de expiración
         if (now - sessionData.timestamp > (24 * 60 * 60 * 1000)) {
             logout();
         }
     }
 })();
 
-// Variables globales de la APP
 window.app = window.app || {};
 window.app.state = {
     currentModule: null,
@@ -29,8 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
 function loadUserInfo() {
     const session = JSON.parse(localStorage.getItem('lims_user_session'));
     if (session) {
-        document.getElementById('userNameDisplay').textContent = session.name;
-        document.getElementById('userRoleDisplay').textContent = session.role.toUpperCase().replace('_', ' ');
+        const elName = document.getElementById('userNameDisplay');
+        const elRole = document.getElementById('userRoleDisplay');
+        if(elName) elName.textContent = session.name;
+        if(elRole) elRole.textContent = session.role.toUpperCase().replace('_', ' ');
     }
 }
 
@@ -39,15 +41,8 @@ window.logout = function() {
     window.location.href = 'login.html';
 };
 
-// --- NAVEGACIÓN Y CARGA DE MÓDULOS ---
+// --- NAVEGACIÓN Y BREADCRUMBS ---
 
-/**
- * Navega a un módulo específico.
- * 1. Oculta el dashboard.
- * 2. Muestra el contenedor de módulos.
- * 3. Carga el script del módulo si no existe.
- * 4. Inicializa el módulo.
- */
 window.app.navigateTo = function(moduleName) {
     console.log(`Navegando a: ${moduleName}`);
     
@@ -55,61 +50,96 @@ window.app.navigateTo = function(moduleName) {
     document.getElementById('view-dashboard').classList.add('hidden');
     document.getElementById('view-module').classList.remove('hidden');
     
-    // UI: Actualizar Breadcrumb
-    const breadcrumb = document.getElementById('breadcrumb');
-    const title = document.getElementById('currentModuleTitle');
-    breadcrumb.classList.remove('hidden');
-    title.textContent = formatModuleName(moduleName);
+    // UI: Iniciar Breadcrumb base
+    window.app.updateBreadcrumb([formatModuleName(moduleName)]);
 
-    // LÓGICA: Cargar script dinámicamente
+    // Cargar script
     if (!window.app.state.loadedScripts.includes(moduleName)) {
         loadModuleScript(moduleName);
     } else {
-        // Si ya está cargado, reinicializarlo
         if (window.app[moduleName] && typeof window.app[moduleName].init === 'function') {
             window.app[moduleName].init();
         }
     }
 };
 
-/**
- * Regresa al Dashboard principal
- */
 window.app.goHome = function() {
     document.getElementById('view-module').classList.add('hidden');
-    document.getElementById('view-module').innerHTML = ''; // Limpiar vista anterior
+    document.getElementById('view-module').innerHTML = ''; 
     document.getElementById('view-dashboard').classList.remove('hidden');
+    
+    // Ocultar Breadcrumb en Home
     document.getElementById('breadcrumb').classList.add('hidden');
     window.app.state.currentModule = null;
 };
 
-// Helper interno para cargar scripts JS bajo demanda
+// --- FUNCIÓN NUEVA: ACTUALIZAR RUTA DE NAVEGACIÓN ---
+window.app.updateBreadcrumb = function(steps) {
+    const breadcrumbContainer = document.getElementById('breadcrumb');
+    
+    if (!steps || steps.length === 0) {
+        breadcrumbContainer.classList.add('hidden');
+        return;
+    }
+
+    breadcrumbContainer.classList.remove('hidden');
+    breadcrumbContainer.innerHTML = ''; // Limpiar
+
+    // Icono de Casa (Inicio) siempre al principio
+    let html = `
+        <span class="material-symbols-outlined text-[18px] text-slate-400 cursor-pointer hover:text-white transition-colors" onclick="app.goHome()">home</span>
+    `;
+
+    steps.forEach((step, index) => {
+        // Separador
+        html += `<span class="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>`;
+        
+        // El último elemento es el activo (Color Sky), los anteriores son links (Gris)
+        if (index === steps.length - 1) {
+            html += `<span class="font-bold text-xelle-sky text-sm tracking-wide">${step}</span>`;
+        } else {
+            // Aquí podríamos agregar lógica para hacer clic en niveles anteriores si fuera necesario
+            html += `<span class="text-slate-400 text-sm font-medium hover:text-white transition-colors cursor-default">${step}</span>`;
+        }
+    });
+
+    breadcrumbContainer.innerHTML = html;
+};
+
 function loadModuleScript(moduleName) {
     const script = document.createElement('script');
-    script.src = `modules/${moduleName}/${moduleName}.js`;
+    // Mapeo especial para nombres de carpeta vs nombre de módulo
+    let pathName = moduleName;
+    if (moduleName === 'banco-celulas') pathName = 'banco-celulas'; // Asegurar coincidencia
+
+    script.src = `modules/${pathName}/${pathName}.js`;
     script.onload = () => {
-        console.log(`Script ${moduleName} cargado.`);
         window.app.state.loadedScripts.push(moduleName);
-        // Intentar inicializar si el script define el objeto global
         if (window.app[moduleName] && typeof window.app[moduleName].init === 'function') {
             window.app[moduleName].init();
         }
     };
     script.onerror = () => {
-        alert(`No se encontró el módulo: ${moduleName}`);
-        window.app.goHome();
+        console.error(`Error cargando ${moduleName}`);
+        // Intentar ruta alternativa si falla (por si acaso el nombre carpeta/archivo difiere)
+        if(moduleName === 'banco-celulas') {
+             // Fallback logic removed for clarity, stick to standard structure
+             alert(`No se pudo cargar el módulo: ${moduleName}`);
+             window.app.goHome();
+        }
     };
     document.body.appendChild(script);
 }
 
 function formatModuleName(name) {
     const names = {
-        'comercial': 'Comercial / Ventas',
-        'lab-calidad': 'Control de Calidad',
-        'almacen': 'Almacén e Inventario',
+        'comercial': 'Comercial',
+        'lab-calidad': 'Calidad',
+        'almacen': 'Almacén',
+        'banco-celulas': 'Banco de Células',
+        'sgc': 'Biblioteca SGC',
         'admin': 'Administración',
-        'documentacion': 'Biblioteca SGC',
-        'banco-celulas': 'Banco de Células'
+        'configuracion': 'Configuración'
     };
     return names[name] || name;
 }

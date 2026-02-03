@@ -33,7 +33,7 @@
 
         <div class="header-main">
             <h1>FORMATO REGISTRO DIARIO DE DOSIFICACIÓN.</h1>
-            <div class="metadata">Código: FO-LC-24 | Versión: 2.3 | Vig: Ene2026</div>
+            <div class="metadata">Código: FO-LC-24 | Versión: 1.0 | Vig: Ene2026</div>
         </div>
 
         <div style="margin-bottom:10px;">
@@ -42,7 +42,25 @@
         </div>
 
         <div class="section">
-            <div class="section-title">1. DOSIS PREPARADAS</div>
+            <div class="section-title">1. INSUMOS UTILIZADOS</div>
+            <table id="tbl-insumos" class="compact-table">
+                <thead>
+                    <tr>
+                        <th width="15%">ID Insumo</th>
+                        <th width="25%">Insumo</th>
+                        <th width="20%">Marca</th>
+                        <th width="20%">Lote</th>
+                        <th width="15%">Caducidad</th>
+                        <th width="5%" class="no-print"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <button class="btn btn-primary btn-mini no-print" onclick="addInsumoRow24()">+ Agregar Insumo</button>
+        </div>
+
+        <div class="section">
+            <div class="section-title">2. DOSIS PREPARADAS</div>
             <table id="tbl-dosis" class="compact-table">
                 <thead>
                     <tr>
@@ -65,7 +83,7 @@
         </div>
 
         <div class="section">
-            <div class="section-title">2. INVENTARIO DEL DÍA</div>
+            <div class="section-title">3. INVENTARIO DEL DÍA</div>
             <table class="compact-table text-center">
                 <thead>
                     <tr>
@@ -107,8 +125,32 @@
             <div class="signature-box"><p>Elaboró:</p><input type="text"><p>Firma</p></div>
             <div class="signature-box"><p>Revisó:</p><input type="text"><p>Firma</p></div>
         </div>
-        <div class="footer">FO-LC-24 | Versión: 2.3 | Vigente a partir de: Enero2026<br>El contenido de este documento es propiedad 
+        <div class="footer">FO-LC-24 | Versión: 1.0 | Vigente a partir de: Enero2026<br>El contenido de este documento es propiedad 
             de “Xelle Scientific”, S.A.P.I., de C. V., y está protegido por los derechos de autor, por lo que está prohibida su reproducción total o parcial.</div>
     </div>
+
+    <script>
+        // Funcionalidad Nueva Sección Insumos
+        function addInsumoRow24() {
+            const tbody = document.getElementById('tbl-insumos').querySelector('tbody');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input class="cedit" placeholder="ID..."></td>
+                <td><input class="cedit"></td>
+                <td><input class="cedit"></td>
+                <td><input class="cedit"></td>
+                <td><input type="date" class="cedit"></td>
+                <td class="no-print"><button class="btn btn-danger btn-mini" onclick="this.closest('tr').remove()">x</button></td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        // Inicializar Insumos
+        document.addEventListener('DOMContentLoaded', () => {
+            if(document.querySelector('#tbl-insumos tbody').children.length === 0) {
+                addInsumoRow24();
+            }
+        });
+    </script>
 </body>
 </html>

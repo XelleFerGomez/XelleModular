@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # Base de Datos PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: xelle_db
+    restart: always
+    environment:
+      POSTGRES_USER: xelle_admin
+      POSTGRES_PASSWORD: xelle_password_secure_123
+      POSTGRES_DB: xelle_lims
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Interfaz gráfica para ver la BD (Opcional pero útil: pgAdmin)
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: xelle_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@xelle.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

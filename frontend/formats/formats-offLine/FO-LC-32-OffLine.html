@@ -9,11 +9,15 @@
     <style>
         @media print {
             @page { size: letter; margin: 0.5cm; }
-            body { -webkit-print-color-adjust: exact; }
+            body { 
+                background: white; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+            }
+            .no-print { display: none !important; }
+            textarea { border: 1px solid #000 !important; resize: none; overflow: hidden; }
             input::placeholder, textarea::placeholder { color: transparent !important; }
             table, th, td, div { border-color: #000 !important; }
-            textarea { border: 1px solid #000 !important; resize: none; overflow: hidden; }
-            .no-print { display: none !important; }
         }
         .data-table th { background: #f0f0f0; font-size: 10px; padding: 3px; border: 1px solid #000; vertical-align: middle; }
         .data-table td { border: 1px solid #000; padding: 2px; height: 20px; }
@@ -39,7 +43,7 @@
                     <span class="registry-prefix">FO-LC-32-</span>
                     <input type="text" id="reg-32" class="registry-input generate-barcode" data-target="barcode-32" data-prefix="FO-LC-32-" placeholder="0001">
                 </div>
-                <input type="text" class="registry-date" placeholder="DD/MM/AA">
+                <input type="text" class="registry-date" placeholder="DD/MM/AAAA">
                 <svg id="barcode-32" class="barcode-svg"></svg>
             </div>
         </div>
@@ -68,17 +72,17 @@
 
         <div class="section">
             <div class="section-title">1. DESCRIPCIÓN DEL EVENTO</div>
-            <textarea class="textarea-box" rows="4" placeholder="Describa detalladamente el problema, falla o desviación encontrada..."></textarea>
+            <textarea class="textarea-box" rows="4" placeholder="Describa detalladamente el problema..."></textarea>
         </div>
 
         <div class="section">
             <div class="section-title">2. ACCIÓN INMEDIATA / CONTENCIÓN</div>
-            <textarea class="textarea-box" rows="2" placeholder="Acciones tomadas al momento para contener el problema..."></textarea>
+            <textarea class="textarea-box" rows="2" placeholder="Acciones tomadas al momento..."></textarea>
         </div>
 
         <div class="section">
             <div class="section-title">3. ANÁLISIS DE CAUSA RAÍZ</div>
-            <textarea class="textarea-box" rows="3" placeholder="Investigación de las causas (5 Porqués, Ishikawa, etc.)..."></textarea>
+            <textarea class="textarea-box" rows="3" placeholder="Investigación de las causas..."></textarea>
         </div>
 
         <div class="section">
@@ -102,12 +106,12 @@
         <div class="section">
             <div class="section-title">5. EVALUACIÓN DE RIESGO Y DICTAMEN</div>
             <div style="display:flex; justify-content:space-around; border:1px solid #999; padding:5px; margin-bottom:5px; font-size:11px;">
-                <label><input type="checkbox"> <strong>MENOR</strong> (No impacta calidad)</label>
-                <label><input type="checkbox"> <strong>MAYOR</strong> (Riesgo potencial)</label>
-                <label><input type="checkbox"> <strong>CRÍTICA</strong> (Impacta seguridad)</label>
+                <label><input type="checkbox"> <strong>MENOR</strong></label>
+                <label><input type="checkbox"> <strong>MAYOR</strong></label>
+                <label><input type="checkbox"> <strong>CRÍTICA</strong></label>
             </div>
             <div style="border:1px solid #999; padding:5px;">
-                <strong>Conclusión Final de Calidad:</strong><br>
+                <strong>Conclusión Final de Calidad (Cierre):</strong><br>
                 <input class="cedit" style="width:100%; border-bottom:1px dashed #ccc; margin-top:5px;">
             </div>
         </div>
@@ -117,7 +121,7 @@
             <div class="signature-box"><p>Responsable Sanitario:</p><input type="text"><p>Firma y Fecha</p></div>
         </div>
         
-        <div class="footer">FO-LC-32 | Versión: 1.0-OFF | Xelle Scientific</div>
+        <div class="footer">FO-LC-32 | Versión: 1.0-OFF | Documento Controlado | Xelle Scientific S.A.P.I de C.V.</div>
     </div>
 </body>
 </html>

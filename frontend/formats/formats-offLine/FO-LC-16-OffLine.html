@@ -7,7 +7,6 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="format-app-OffLine.js"></script>
     <style>
-        /* REGLAS DE IMPRESIÓN */
         @media print {
             @page { size: letter; margin: 0.5cm; }
             body { 
@@ -19,10 +18,9 @@
             input::placeholder { color: transparent !important; }
             table, th, td, div { border-color: #000 !important; }
             input.cedit { border: none !important; }
-            select { appearance: none; border: none; background: transparent; }
+            textarea { border: 1px solid #000 !important; resize: none; }
         }
 
-        /* Estilos Específicos del Resumen */
         .summary-header {
             background-color: #333;
             color: white;
@@ -36,7 +34,7 @@
 
         .data-table th { background: #f0f0f0; font-size: 10px; padding: 4px; border: 1px solid #000; text-align: center; }
         .data-table td { border: 1px solid #000; padding: 4px; text-align: center; }
-        .data-table input, .data-table select { width: 98%; border: none; outline: none; background: transparent; font-size: 11px; text-align: center; }
+        .data-table input { width: 98%; border: none; outline: none; background: transparent; font-size: 11px; text-align: center; }
 
         .decision-box {
             border: 2px solid #000;
@@ -164,12 +162,7 @@
                 </div>
                 <div style="width: 35%; text-align:center;">
                     <strong>Decisión de Calidad:</strong><br>
-                    <select class="cedit" style="font-size:14px; font-weight:bold; margin-top:10px; border:2px solid #000; padding:5px; width:100%;">
-                        <option value="">- SELECCIONAR -</option>
-                        <option value="LIBERADO">LIBERADO</option>
-                        <option value="CUARENTENA">CUARENTENA</option>
-                        <option value="RECHAZADO">RECHAZADO</option>
-                    </select>
+                    <input class="cedit" style="font-size:16px; font-weight:bold; margin-top:10px; border:2px solid #000 !important; padding:5px; width:100%; text-transform: uppercase;" placeholder="LIBERADO / RECHAZADO">
                 </div>
             </div>
         </div>

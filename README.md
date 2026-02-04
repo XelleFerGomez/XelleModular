@@ -1,56 +1,210 @@
-# XelleSystem — Documentos y LIMS (README)
+# 🧪 XelleSystem — LIMS/CRM para Gestión de Laboratorios
 
-**Descripción corta:** XelleSystem proporciona la interfaz y recursos (frontend) para generación y gestión de formatos y documentos para laboratorios (LIMS/CRM). Este repositorio contiene los archivos estáticos del frontend, plantillas de formatos (FO-*), y utilidades para mantener la estructura y detectar cambios mediante hashes MD5.
+**Descripción:** XelleSystem es un sistema integral de Laboratorio LIMS (Laboratory Information Management System) y CRM integrado, diseñado para laboratorios y centros de análisis. Proporciona una interfaz web moderna (frontend), gestión de formatos de documentos (plantillas FO-*), módulos especializados, backend escalable y capacidades de deployement containerizado. El sistema permite generar, gestionar y auditar documentos de laboratorio con integridad verificable mediante hashes MD5.
 
----
-
-## 📋 Contenido (resumen)
-- Frontend: archivos HTML, CSS, JS, formats (online + offline), assets e imágenes.
-- Documentación: `estructura_completa.txt`, `hashes.md` (manifiesto MD5 generado), y archivos PDF/DOCX de referencia.
-- Backend: carpeta preparada (actualmente vacía) para integración futura.
-
----
-
-## 🚀 Características principales
-- Plantillas de formato (FO-*) para generar documentos de laboratorio (online y offline).
-- Sistema modular (carpeta `modules/`) para funcionalidades (admin, almacen, banco-celulas, etc.).
-- Manifiesto de integridad: `frontend/hashes.md` con MD5 de todos los archivos para detectar cambios.
-- Archivo `estructura_completa.txt` con árbol actualizado de la estructura de `frontend`.
+**Tecnologías principales:**
+- **Frontend:** HTML5, CSS3, JavaScript vanilla (módulos)
+- **Backend:** Java (Spring Boot, en preparación)
+- **Contenedores:** Docker + Docker Compose
+- **Base de datos:** Preparada para integración (PostgreSQL/MySQL recomendado)
+- **Seguridad:** Autenticación, manifiesto de integridad MD5/SHA256, auditoría
 
 ---
 
-## 🛠️ Requisitos
-- Windows / Linux / macOS
-- Python 3 (opcional, para servir archivos estáticos localmente)
-- PowerShell (para generar hashes; disponible en Windows y PS Core en otros sistemas)
-- Node.js (opcional, para utilidades como `http-server`)
+## 📋 Tabla de Contenidos
+1. [Estructura del Proyecto](#-estructura-del-repositorio-detallada)
+2. [Instalación](#-instalación-y-configuración)
+3. [Uso Local](#-ejecución-local)
+4. [Módulos y Características](#-módulos-y-características)
+5. [Backend (Java/Spring)](#-backend-javasspring-boot)
+6. [Docker y Containerización](#-docker-y-containerización)
+7. [Seguridad y Auditoría](#-seguridad-y-auditoría)
+8. [Desarrollo y Extensión](#-desarrollo-y-extensión)
+9. [Deployment](#-deployment-a-producción)
+10. [Troubleshooting](#-troubleshooting)
+11. [Contribuir](#-contribuir)
+12. [FAQ](#-faq)
 
 ---
 
-## 📥 Instalación y uso local
-1. Clona el repositorio:
+## 📦 Contenido (detallado)
+- **Frontend:** Archivos HTML/CSS/JS, plantillas de formatos (FO-*) online y offline, módulos especializados, sistema de autenticación, dashboard, assets e imágenes.
+- **Backend:** Carpeta Java con Maven (`pom.xml`), controladores, servicios, repositorios, y modelos de datos.
+- **Documentación:** Estructura completa, hashes MD5 para auditoría, documentos de referencia (PDF/DOCX).
+- **DevOps:** `docker-compose.yml` para orquestación de servicios, configuración de entornos.
 
+---
+
+## 🚀 Características Principales
+
+### 🎯 Núcleo LIMS
+- **Gestión de Formatos:** Plantillas especializadas (FO-*) para documentos de laboratorio
+  - Formatos de Laboratorio (FO-LC-16 a FO-LC-45): análisis químicos, calibración, pruebas
+  - Formatos de Operación (FO-OP-*): procedimientos, calibración de equipos
+  - Versiones Online y Offline para acceso sin conectividad
+- **Módulos Especializados:**
+  - 🔐 **Admin:** Gestión de usuarios, roles y permisos
+  - 📦 **Almacén:** Control de inventario, materiales, reactivos
+  - 🧬 **Banco de Células:** Líneas celulares, cultivos, almacenamiento
+  - 💄 **Cosméticos:** Análisis de ingredientes, pruebas de seguridad
+  - 🧪 **Lab Calidad:** Control de calidad, métodos analíticos, validación
+  - 📊 **Comercial:** Gestión de clientes, órdenes, facturación
+  - ⚙️ **Configuración:** Parámetros globales, integraciones
+  - 🏢 **SGC:** Sistema de Gestión de Calidad, documentación
+
+### 🔒 Seguridad
+- **Sistema de Autenticación:** Login con validación, gestión de sesiones
+- **Control de Integridad:** Manifiesto MD5/SHA256 para detectar cambios no autorizados
+- **Auditoría:** Trazabilidad de cambios, registros de acceso, fecha/hora de modificaciones
+- **Autorización Basada en Roles:** Módulos y funciones restringidas por rol de usuario
+
+### 📱 Interfaz y UX
+- Dashboard intuitivo con resumen de actividades
+- Tema oscuro/claro (LIMS-theme.css)
+- Diseño responsivo (compatible con desktop, tablet, móvil)
+- Offline-first: modo offline con sincronización cuando se recupere conexión
+- Acceso rápido a formatos y módulos frecuentes
+
+### 📊 Reportes y Exportación
+- Generación dinámica de reportes desde datos del laboratorio
+- Exportación a PDF, Excel (utilizando librerías JavaScript)
+- Trazabilidad completa de análisis y resultados
+- Historial de cambios para auditoría regulatoria
+
+---
+
+## 🛠️ Requisitos del Sistema
+
+### Desarrollo Local
+| Componente | Versión | Notas |
+|-----------|---------|-------|
+| **Node.js** | 16+ | Para servir archivos estáticos, opcional |
+| **Python** | 3.8+ | Para servir frontend localmente, opcional |
+| **PowerShell** | 5.1+ | Para scripts de auditoría (Windows) |
+| **Git** | 2.30+ | Control de versiones |
+| **Docker** | 20.10+ | Para containerización y ejecución |
+| **Docker Compose** | 1.29+ | Para orquestación multi-contenedor |
+| **Java/JDK** | 11+ | Backend (cuando se implemente) |
+| **Maven** | 3.6+ | Build tool del backend Java |
+
+### Base de Datos
+- **PostgreSQL 12+** (recomendado) o **MySQL 8.0+**
+- Para desarrollo: SQLite como alternativa lightweight
+- Scripts de inicialización en `backend/resources/db/`
+
+### Navegadores Soportados
+- Chrome/Chromium 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+- Navegadores con soporte ES6 (ECMAScript 2015+)
+
+---
+
+## 📥 Instalación y Configuración
+
+### 1. Clonar el Repositorio
 ```bash
-git clone <repo-url>
+git clone https://github.com/xelle/xellesystem.git
 cd XelleSystem
 ```
 
-2. Servir el frontend (opciones):
-- Con Python 3:
+### 2. Estructura de Directorios (crear si es necesario)
+```
+XelleSystem/
+├── frontend/                 # Frontend (HTML, CSS, JS)
+│   ├── modules/             # Módulos especializados
+│   ├── formats/             # Plantillas de documentos
+│   ├── js/                  # Scripts y lógica
+│   └── css/                 # Estilos
+├── backend/                 # Backend Java/Spring
+│   ├── src/
+│   ├── pom.xml             # Maven configuration
+│   └── mvnw/mvnw.cmd       # Maven wrapper
+├── docker-compose.yml       # Orquestación de contenedores
+└── README.md               # Este archivo
+```
 
+### 3. Configuración de Variables de Entorno
+
+Crear `.env` en la raíz del proyecto:
+
+```env
+# Base de datos
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=xellesystem
+DB_USER=xelle
+DB_PASSWORD=tu_contraseña_segura
+
+# Backend (Java/Spring)
+SPRING_PROFILE=development
+JAVA_OPTS=-Xmx512m
+
+# Frontend
+FRONTEND_PORT=8000
+API_BASE_URL=http://localhost:8080/api
+
+# Docker
+DOCKER_REGISTRY=docker.io
+IMAGE_VERSION=latest
+
+# Seguridad
+JWT_SECRET=tu_jwt_secret_super_largo_y_aleatorio
+ENCRYPTION_KEY=tu_clave_encriptacion
+
+# Logging
+LOG_LEVEL=INFO
+```
+
+### 4. Setup Inicial
+
+#### Opción A: Desarrollo Local (sin Docker)
+
+**Frontend:**
 ```bash
 cd frontend
+# Opción 1: Python 3
 python -m http.server 8000
-# Abrir http://localhost:8000
+# Opción 2: Node.js (http-server)
+npx http-server . -p 8000
+# Luego abrir: http://localhost:8000/index.html o http://localhost:8000/login.html
 ```
 
-- Con Node (http-server):
+**Backend (cuando esté disponible):**
+```bash
+cd backend
+mvnw.cmd clean install          # Windows
+./mvnw clean install            # Linux/macOS
+mvnw.cmd spring-boot:run        # Windows
+./mvnw spring-boot:run          # Linux/macOS
+# API disponible en: http://localhost:8080
+```
+
+#### Opción B: Con Docker Compose (Recomendado)
 
 ```bash
-npx http-server ./frontend -p 8000
+# Construir imágenes
+docker-compose build
+
+# Iniciar servicios
+docker-compose up -d
+
+# Verificar estado
+docker-compose ps
+
+# Ver logs
+docker-compose logs -f
+
+# Detener servicios
+docker-compose down
 ```
 
-3. Abrir `index.html` o `login.html` en el navegador.
+**Servicios disponibles después de `up`:**
+- Frontend: http://localhost:8000
+- Backend API: http://localhost:8080
+- Base de datos: localhost:5432 (PostgreSQL)
+- Adminer (DB UI): http://localhost:8081
 
 ---
 

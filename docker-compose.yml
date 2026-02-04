@@ -8,8 +8,9 @@ services:
     restart: always
     environment:
       POSTGRES_USER: xelle_admin
-      POSTGRES_PASSWORD: xelle_password_secure_123
+      POSTGRES_PASSWORD: xelle_password_secure_123  <-- ESTA ES LA VERDADERA
       POSTGRES_DB: xelle_lims
+    
     ports:
       - "5432:5432"
     volumes:

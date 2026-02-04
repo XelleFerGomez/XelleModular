@@ -1,8 +1,6 @@
-// frontend/modules/banco-celulas/views.js
-
 /**
  * VISTAS (PRESENTATION LAYER)
- * Solo HTML y diseño visual. No maneja datos.
+ * HTML Puro con IDs para captura de datos
  */
 
 window.app = window.app || {};
@@ -10,7 +8,7 @@ window.app.views = window.app.views || {};
 
 window.app.views.bancoCelulas = {
 
-    // Layout Principal
+    // --- LAYOUT ---
     layout: (menuHtml) => `
         <div class="flex h-[calc(100vh-80px)] overflow-hidden font-display bg-bg-light animate-fade-in">
             <aside class="w-64 bg-white border-r border-slate-200 flex flex-col shrink-0 hidden md:flex z-10 shadow-sm relative">
@@ -40,11 +38,11 @@ window.app.views.bancoCelulas = {
         </div>
     `,
 
-    // Dashboard
+    // --- DASHBOARD ---
     dashboard: (stats, alertsHtml) => `
         <header class="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-20">
-            <div><h2 class="text-xl font-black text-xelle-navy">Panel de Control</h2></div>
-            <button onclick="window.app.bancoCelulas.navigateTo('recepcion')" class="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg font-bold text-xs flex gap-2 shadow-lg shadow-primary/20"><span class="material-symbols-outlined text-sm">add_circle</span> NUEVO INGRESO</button>
+            <div><h2 class="text-xl font-black text-xelle-navy tracking-tight">Panel de Control</h2><p class="text-xs text-slate-500 font-medium">Resumen operativo del laboratorio</p></div>
+            <button onclick="window.app.bancoCelulas.navigateTo('recepcion')" class="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg font-bold text-xs flex items-center gap-2 shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5"><span class="material-symbols-outlined text-sm">add_circle</span> NUEVO INGRESO</button>
         </header>
         <div class="p-8 max-w-[1600px] mx-auto w-full flex flex-col gap-6 animate-fade-in">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -66,41 +64,143 @@ window.app.views.bancoCelulas = {
         </div>
     `,
 
-    // Componentes Reutilizables (Micro-vistas)
-    components: {
-        navBtn: (id, icon, label) => `
-            <button id="nav-btn-${id}" onclick="window.app.bancoCelulas.navigateTo('${id}')" 
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all w-full text-left group text-slate-500 hover:bg-slate-50 hover:text-xelle-navy">
-                <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">${icon}</span>
-                <span class="text-xs font-bold tracking-wide">${label}</span>
-            </button>
-        `,
-        kpiCard: (icon, title, value, sub, colorClass) => {
-            const isTextPrimary = colorClass === 'primary';
-            const textColor = isTextPrimary ? 'text-primary' : `text-${colorClass}`;
-            const bgClass = isTextPrimary ? 'bg-primary' : `bg-${colorClass}`;
-            return `
-                <div class="glass-panel bg-white p-5 rounded-2xl border border-slate-100 relative overflow-hidden group hover:border-slate-300 transition-all">
-                    <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><span class="material-symbols-outlined text-6xl text-xelle-navy">${icon}</span></div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">${title}</p>
-                    <div class="flex items-baseline gap-2 mt-2">
-                        <p class="text-3xl font-black text-xelle-navy">${value}</p>
-                        <span class="text-[10px] font-bold ${textColor} bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">${sub}</span>
-                    </div>
-                    <div class="mt-3 w-full bg-slate-100 h-1 rounded-full overflow-hidden"><div class="${bgClass} h-full rounded-full" style="width: 70%"></div></div>
+    // --- RECEPCIÓN (FORMULARIO CONECTADO A BACKEND) ---
+    recepcion: () => `
+        <div class="flex flex-col h-full animate-fade-in">
+            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0 sticky top-0 z-20">
+                <div>
+                    <div class="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5"><span class="cursor-pointer hover:text-primary" onclick="window.app.bancoCelulas.navigateTo('dashboard')">Dashboard</span><span class="material-symbols-outlined text-[10px]">chevron_right</span><span class="text-primary">Nueva Recepción</span></div>
+                    <h2 class="text-xl font-black text-xelle-navy tracking-tight">Registro de Línea Celular (FO-LC-17)</h2>
                 </div>
-            `;
+                <div class="flex gap-3">
+                    <button onclick="window.app.bancoCelulas.navigateTo('dashboard')" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-red-500 transition-colors">Cancelar</button>
+                    <button onclick="window.app.bancoCelulas.Logic.saveForm()" class="bg-primary hover:bg-primary-hover text-white px-6 py-2 rounded-lg font-bold text-xs flex items-center gap-2 shadow-lg shadow-primary/20"><span class="material-symbols-outlined text-sm">save</span> GUARDAR</button>
+                </div>
+            </header>
+            <div class="flex-1 overflow-y-auto p-8">
+                <div class="max-w-5xl mx-auto space-y-6">
+                    <form id="form-recepcion">
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                            <h3 class="font-bold text-sm text-xelle-navy uppercase tracking-wide mb-4 border-b pb-2 flex gap-2"><span class="material-symbols-outlined text-primary">person</span> 1. Información del Donante</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-slate-500 uppercase">Nombre Completo</label>
+                                    <input type="text" id="nombreDonante" class="w-full border-slate-200 rounded-lg text-sm focus:border-primary focus:ring-primary" placeholder="Ej. María González">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-slate-500 uppercase">Fecha Nacimiento</label>
+                                    <input type="date" id="fechaNacimiento" class="w-full border-slate-200 rounded-lg text-sm focus:border-primary focus:ring-primary">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-slate-500 uppercase">ID Pasaporte / Identificación</label>
+                                    <input type="text" id="idPasaporte" class="w-full border-slate-200 rounded-lg text-sm focus:border-primary focus:ring-primary" placeholder="A12345678">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mt-6">
+                            <h3 class="font-bold text-sm text-xelle-navy uppercase tracking-wide mb-4 border-b pb-2 flex gap-2"><span class="material-symbols-outlined text-blue-500">biotech</span> 2. Datos de la Muestra</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-slate-500 uppercase">Tipo de Tejido</label>
+                                    <select id="tipoTejido" class="w-full border-slate-200 rounded-lg text-sm font-bold text-xelle-navy focus:border-primary focus:ring-primary">
+                                        <option value="Cordon Umbilical">Cordón Umbilical</option>
+                                        <option value="Placenta">Placenta</option>
+                                        <option value="Tejido Adiposo">Tejido Adiposo</option>
+                                        <option value="Medula Osea">Médula Ósea</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-slate-500 uppercase">Fecha Colecta</label>
+                                    <input type="date" id="fechaColecta" class="w-full border-slate-200 rounded-lg text-sm focus:border-primary focus:ring-primary">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-slate-500 uppercase">Temp. Recepción (°C)</label>
+                                    <input type="number" id="temperaturaRecepcion" step="0.1" class="w-full border-slate-200 rounded-lg text-sm pl-4 focus:border-primary focus:ring-primary" placeholder="0.0">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `,
+
+    // --- CULTIVOS ---
+    cultivos: (cultures) => `
+        <div class="flex flex-col h-full animate-fade-in">
+            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0">
+                <h2 class="text-xl font-black text-xelle-navy tracking-tight">Gestión de Cultivos Activos</h2>
+            </header>
+            <div class="p-8 overflow-y-auto">
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase">ID Cultivo</th>
+                                <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase">Línea</th>
+                                <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            ${cultures.map(c => `
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="px-6 py-4 font-mono text-xs font-bold text-xelle-navy">${c.id}</td>
+                                <td class="px-6 py-4 text-sm font-bold text-slate-700">${c.line}</td>
+                                <td class="px-6 py-4"><span class="text-[10px] font-bold uppercase text-emerald-600">${c.status}</span></td>
+                            </tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    `,
+
+    // --- INCUBADORAS ---
+    incubadoras: (incubators) => `
+        <div class="p-8 h-full flex flex-col animate-fade-in">
+            <h2 class="text-2xl font-black text-xelle-navy mb-6">Flota de Incubadoras</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                ${incubators.map(inc => `
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                    <h4 class="font-black text-xelle-navy text-lg">${inc.id}</h4>
+                    <div class="grid grid-cols-2 gap-4 mt-2">
+                        <div class="bg-slate-50 rounded-lg p-2 text-center"><p class="text-xl font-black text-slate-700">${inc.temp}°C</p></div>
+                        <div class="bg-slate-50 rounded-lg p-2 text-center"><p class="text-xl font-black text-slate-700">${inc.co2}%</p></div>
+                    </div>
+                </div>`).join('')}
+            </div>
+        </div>
+    `,
+
+    // --- CRIOBANCO ---
+    criobanco: () => `
+        <div class="flex flex-col h-full animate-fade-in">
+            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0">
+                <h2 class="text-xl font-black text-xelle-navy">Visualizador Criobanco (FO-LC-22)</h2>
+            </header>
+            <div class="flex-1 p-8 flex gap-8 justify-center overflow-y-auto">
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl">
+                    <div id="cryo-grid-container" class="grid grid-cols-10 gap-2 aspect-square bg-slate-50 p-2 rounded-xl"></div>
+                </div>
+            </div>
+        </div>
+    `,
+
+    // --- COMPONENTS ---
+    components: {
+        navBtn: (id, icon, label) => `<button id="nav-btn-${id}" onclick="window.app.bancoCelulas.navigateTo('${id}')" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all w-full text-left group text-slate-500 hover:bg-slate-50 hover:text-xelle-navy"><span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">${icon}</span><span class="text-xs font-bold tracking-wide">${label}</span></button>`,
+        kpiCard: (icon, title, value, sub, color) => {
+            const txt = color==='primary'?'text-primary':`text-${color}`; 
+            const bg = color==='primary'?'bg-primary':`bg-${color}`;
+            return `<div class="glass-panel bg-white p-5 rounded-2xl border border-slate-100 relative overflow-hidden group hover:border-slate-300 transition-all"><div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><span class="material-symbols-outlined text-6xl text-xelle-navy">${icon}</span></div><p class="text-xs font-bold text-slate-400 uppercase tracking-wider">${title}</p><div class="flex items-baseline gap-2 mt-2"><p class="text-3xl font-black text-xelle-navy">${value}</p><span class="text-[10px] font-bold ${txt} bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">${sub}</span></div><div class="mt-3 w-full bg-slate-100 h-1 rounded-full overflow-hidden"><div class="${bg} h-full rounded-full" style="width: 70%"></div></div></div>`;
         },
         alertRow: (a) => {
             let icon = 'info', color = 'text-blue-500 bg-blue-50';
             if (a.type === 'critical') { icon = 'error'; color = 'text-red-500 bg-red-50'; }
             if (a.type === 'warning') { icon = 'warning'; color = 'text-orange-500 bg-orange-50'; }
-            return `
-                <div class="px-6 py-4 flex items-start gap-4 hover:bg-slate-50 transition-colors cursor-default">
-                    <div class="w-8 h-8 rounded-lg ${color} flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-lg">${icon}</span></div>
-                    <div class="flex-1"><p class="text-sm font-bold text-slate-700 leading-tight">${a.msg}</p><p class="text-[10px] font-bold text-slate-400 uppercase mt-1">Hace ${a.time}</p></div>
-                </div>
-            `;
-        }
+            return `<div class="px-6 py-4 flex items-start gap-4 hover:bg-slate-50 transition-colors cursor-default"><div class="w-8 h-8 rounded-lg ${color} flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-lg">${icon}</span></div><div class="flex-1"><p class="text-sm font-bold text-slate-700 leading-tight">${a.msg}</p><p class="text-[10px] font-bold text-slate-400 uppercase mt-1">Hace ${a.time}</p></div></div>`;
+        },
+        construction: (id) => `<div class="flex flex-col items-center justify-center h-full p-10 text-center"><span class="material-symbols-outlined text-6xl text-slate-200 mb-4">construction</span><h2 class="text-2xl font-bold text-xelle-navy">En Desarrollo</h2><p class="text-slate-500 mt-2">Vista [${id}] en construcción modular.</p><button onclick="window.app.bancoCelulas.navigateTo('dashboard')" class="mt-6 text-primary font-bold hover:underline">Volver</button></div>`
     }
 };

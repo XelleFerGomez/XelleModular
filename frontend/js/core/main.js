@@ -1,145 +1,97 @@
-// frontend/js/core/main.js
+/**
+ * main.js - Núcleo del Sistema Xelle
+ * Maneja la sesión, navegación y carga de módulos.
+ */
 
-// 1. Verificar Sesión al inicio
-(function checkAuth() {
-    const session = localStorage.getItem('lims_user_session');
-    if (!session) {
-        if (!window.location.pathname.includes('login.html')) {
-            window.location.href = 'login.html';
-        }
-    } else {
-        const sessionData = JSON.parse(session);
-        const now = new Date().getTime();
-        if (now - sessionData.timestamp > (24 * 60 * 60 * 1000)) {
-            logout();
-        }
+window.app = window.app || {};
+
+// 1. VERIFICACIÓN DE SEGURIDAD (El "Cadenero")
+// Esto se ejecuta inmediatamente antes de cargar nada más.
+(function checkSession() {
+    const userSession = localStorage.getItem('xelle_user');
+    
+    // Si no hay sesión guardada, mandar al login
+    if (!userSession) {
+        console.warn("⛔ No hay sesión activa. Redirigiendo al Login...");
+        window.location.href = 'login.html';
+        return; // Detener ejecución
+    }
+
+    // Si hay sesión, cargar datos del usuario en memoria
+    try {
+        window.currentUser = JSON.parse(userSession);
+        console.log("✅ Sesión validada para:", window.currentUser.fullName);
+    } catch (e) {
+        console.error("Error leyendo sesión:", e);
+        localStorage.removeItem('xelle_user'); // Borrar sesión corrupta
+        window.location.href = 'login.html';
     }
 })();
 
-window.app = window.app || {};
-window.app.state = {
-    currentModule: null,
-    loadedScripts: []
-};
-
+// 2. INICIALIZACIÓN DEL SISTEMA
 document.addEventListener('DOMContentLoaded', () => {
-    loadUserInfo();
+    
+    // A. Mostrar nombre del usuario en la interfaz
+    updateUserInterface();
+
+    // B. Manejo de Navegación (Sidebar)
+    setupNavigation();
+
+    // C. Cargar Dashboard por defecto
+    // Si tenemos el módulo de banco de células, lo iniciamos si se pide
+    // (Por defecto mostramos el dashboard principal)
 });
 
-function loadUserInfo() {
-    const session = JSON.parse(localStorage.getItem('lims_user_session'));
-    if (session) {
-        const elName = document.getElementById('userNameDisplay');
-        const elRole = document.getElementById('userRoleDisplay');
-        if(elName) elName.textContent = session.name;
-        if(elRole) elRole.textContent = session.role.toUpperCase().replace('_', ' ');
+function updateUserInterface() {
+    // Buscar elementos del DOM donde va el nombre del usuario
+    const userNameElement = document.getElementById('user-name-display');
+    const userRoleElement = document.getElementById('user-role-display');
+
+    if (window.currentUser) {
+        if (userNameElement) userNameElement.innerText = window.currentUser.fullName;
+        if (userRoleElement) userRoleElement.innerText = formatRole(window.currentUser.role);
     }
 }
 
-window.logout = function() {
-    localStorage.removeItem('lims_user_session');
-    window.location.href = 'login.html';
-};
+function formatRole(role) {
+    const roles = {
+        'super_admin': 'Administrador General',
+        'quality_manager': 'Gerente de Calidad',
+        'operator': 'Operador de Producción'
+    };
+    return roles[role] || role;
+}
 
-// --- NAVEGACIÓN Y BREADCRUMBS ---
+function setupNavigation() {
+    // Lógica para cerrar sesión
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            if(confirm("¿Estás seguro de cerrar sesión?")) {
+                localStorage.removeItem('xelle_user');
+                window.location.href = 'login.html';
+            }
+        });
+    }
+}
 
-window.app.navigateTo = function(moduleName) {
-    console.log(`Navegando a: ${moduleName}`);
+// Función global de navegación (Compatibilidad)
+window.app.navigateTo = function(moduleId) {
+    console.log("Navegando a:", moduleId);
     
-    // UI: Cambiar vistas
-    document.getElementById('view-dashboard').classList.add('hidden');
-    document.getElementById('view-module').classList.remove('hidden');
-    
-    // UI: Iniciar Breadcrumb base
-    window.app.updateBreadcrumb([formatModuleName(moduleName)]);
+    const dashboardView = document.getElementById('view-dashboard');
+    const moduleView = document.getElementById('view-module');
 
-    // Cargar script
-    if (!window.app.state.loadedScripts.includes(moduleName)) {
-        loadModuleScript(moduleName);
+    if (moduleId === 'dashboard') {
+        dashboardView.classList.remove('hidden');
+        moduleView.classList.add('hidden');
+        moduleView.innerHTML = ''; // Limpiar módulo anterior
     } else {
-        if (window.app[moduleName] && typeof window.app[moduleName].init === 'function') {
-            window.app[moduleName].init();
-        }
+        // Ocultar dashboard principal
+        dashboardView.classList.add('hidden');
+        moduleView.classList.remove('hidden');
+
+        // Aquí se cargaría el módulo específico si no fuera el Banco de Células
+        // (El Banco de Células tiene su propio init en el index.html)
     }
 };
-
-window.app.goHome = function() {
-    document.getElementById('view-module').classList.add('hidden');
-    document.getElementById('view-module').innerHTML = ''; 
-    document.getElementById('view-dashboard').classList.remove('hidden');
-    
-    // Ocultar Breadcrumb en Home
-    document.getElementById('breadcrumb').classList.add('hidden');
-    window.app.state.currentModule = null;
-};
-
-// --- FUNCIÓN NUEVA: ACTUALIZAR RUTA DE NAVEGACIÓN ---
-window.app.updateBreadcrumb = function(steps) {
-    const breadcrumbContainer = document.getElementById('breadcrumb');
-    
-    if (!steps || steps.length === 0) {
-        breadcrumbContainer.classList.add('hidden');
-        return;
-    }
-
-    breadcrumbContainer.classList.remove('hidden');
-    breadcrumbContainer.innerHTML = ''; // Limpiar
-
-    // Icono de Casa (Inicio) siempre al principio
-    let html = `
-        <span class="material-symbols-outlined text-[18px] text-slate-400 cursor-pointer hover:text-white transition-colors" onclick="app.goHome()">home</span>
-    `;
-
-    steps.forEach((step, index) => {
-        // Separador
-        html += `<span class="material-symbols-outlined text-[16px] text-slate-500">chevron_right</span>`;
-        
-        // El último elemento es el activo (Color Sky), los anteriores son links (Gris)
-        if (index === steps.length - 1) {
-            html += `<span class="font-bold text-xelle-sky text-sm tracking-wide">${step}</span>`;
-        } else {
-            // Aquí podríamos agregar lógica para hacer clic en niveles anteriores si fuera necesario
-            html += `<span class="text-slate-400 text-sm font-medium hover:text-white transition-colors cursor-default">${step}</span>`;
-        }
-    });
-
-    breadcrumbContainer.innerHTML = html;
-};
-
-function loadModuleScript(moduleName) {
-    const script = document.createElement('script');
-    // Mapeo especial para nombres de carpeta vs nombre de módulo
-    let pathName = moduleName;
-    if (moduleName === 'banco-celulas') pathName = 'banco-celulas'; // Asegurar coincidencia
-
-    script.src = `modules/${pathName}/${pathName}.js`;
-    script.onload = () => {
-        window.app.state.loadedScripts.push(moduleName);
-        if (window.app[moduleName] && typeof window.app[moduleName].init === 'function') {
-            window.app[moduleName].init();
-        }
-    };
-    script.onerror = () => {
-        console.error(`Error cargando ${moduleName}`);
-        // Intentar ruta alternativa si falla (por si acaso el nombre carpeta/archivo difiere)
-        if(moduleName === 'banco-celulas') {
-             // Fallback logic removed for clarity, stick to standard structure
-             alert(`No se pudo cargar el módulo: ${moduleName}`);
-             window.app.goHome();
-        }
-    };
-    document.body.appendChild(script);
-}
-
-function formatModuleName(name) {
-    const names = {
-        'comercial': 'Comercial',
-        'lab-calidad': 'Calidad',
-        'almacen': 'Almacén',
-        'banco-celulas': 'Banco de Células',
-        'sgc': 'Biblioteca SGC',
-        'admin': 'Administración',
-        'configuracion': 'Configuración'
-    };
-    return names[name] || name;
-}

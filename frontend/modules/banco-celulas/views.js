@@ -1,6 +1,6 @@
 /**
  * VISTAS (PRESENTATION LAYER)
- * HTML Puro con IDs para captura de datos
+ * Renderiza el HTML basado en datos del Backend
  */
 
 window.app = window.app || {};
@@ -8,7 +8,7 @@ window.app.views = window.app.views || {};
 
 window.app.views.bancoCelulas = {
 
-    // --- LAYOUT ---
+    // --- LAYOUT PRINCIPAL ---
     layout: (menuHtml) => `
         <div class="flex h-[calc(100vh-80px)] overflow-hidden font-display bg-bg-light animate-fade-in">
             <aside class="w-64 bg-white border-r border-slate-200 flex flex-col shrink-0 hidden md:flex z-10 shadow-sm relative">
@@ -55,7 +55,7 @@ window.app.views.bancoCelulas = {
                 <div class="xl:col-span-2 flex flex-col gap-6">
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                         <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                            <h3 class="font-bold text-xelle-navy text-sm flex gap-2"><span class="material-symbols-outlined text-orange-500 text-lg">notifications_active</span> Alertas</h3>
+                            <h3 class="font-bold text-xelle-navy text-sm flex gap-2"><span class="material-symbols-outlined text-orange-500 text-lg">notifications_active</span> Alertas del Sistema</h3>
                         </div>
                         <div class="divide-y divide-slate-50">${alertsHtml}</div>
                     </div>
@@ -64,7 +64,7 @@ window.app.views.bancoCelulas = {
         </div>
     `,
 
-    // --- RECEPCIÓN (FORMULARIO CONECTADO A BACKEND) ---
+    // --- RECEPCIÓN (FO-LC-17) ---
     recepcion: () => `
         <div class="flex flex-col h-full animate-fade-in">
             <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0 sticky top-0 z-20">
@@ -126,29 +126,44 @@ window.app.views.bancoCelulas = {
         </div>
     `,
 
-    // --- CULTIVOS ---
+    // --- CULTIVOS ACTIVOS ---
     cultivos: (cultures) => `
         <div class="flex flex-col h-full animate-fade-in">
             <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0">
                 <h2 class="text-xl font-black text-xelle-navy tracking-tight">Gestión de Cultivos Activos</h2>
+                <button onclick="window.app.bancoCelulas.Logic.promptNuevoCultivo()" class="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg font-bold text-xs flex items-center gap-2 shadow-lg shadow-primary/20">
+                    <span class="material-symbols-outlined text-sm">add</span> Registrar Inicio / Pase
+                </button>
             </header>
+            
             <div class="p-8 overflow-y-auto">
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 border-b border-slate-200">
                             <tr>
-                                <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase">ID Cultivo</th>
+                                <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase">ID</th>
                                 <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase">Línea</th>
+                                <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase">Pase</th>
+                                <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase">Ubicación</th>
+                                <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase">Confluencia</th>
                                 <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase">Estado</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
-                            ${cultures.map(c => `
-                            <tr class="hover:bg-slate-50/50">
-                                <td class="px-6 py-4 font-mono text-xs font-bold text-xelle-navy">${c.id}</td>
-                                <td class="px-6 py-4 text-sm font-bold text-slate-700">${c.line}</td>
-                                <td class="px-6 py-4"><span class="text-[10px] font-bold uppercase text-emerald-600">${c.status}</span></td>
-                            </tr>`).join('')}
+                            ${cultures.length > 0 ? cultures.map(c => `
+                            <tr class="hover:bg-slate-50/50 group transition-colors">
+                                <td class="px-6 py-4 font-mono text-xs font-bold text-xelle-navy">#${c.id}</td>
+                                <td class="px-6 py-4 text-sm font-bold text-slate-700">${c.lineaCelular || 'N/A'}</td>
+                                <td class="px-6 py-4"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-bold border border-blue-100">P${c.pasajeActual}</span></td>
+                                <td class="px-6 py-4 text-xs font-bold text-slate-500">${c.incubadoraUbicacion}</td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden"><div class="bg-primary h-full rounded-full" style="width: ${c.confluenciaActual}%"></div></div>
+                                        <span class="text-xs font-bold">${c.confluenciaActual}%</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4"><span class="text-[10px] font-bold uppercase ${c.estado === 'Listo' ? 'text-purple-600 bg-purple-50' : 'text-emerald-600 bg-emerald-50'} px-2 py-1 rounded">${c.estado}</span></td>
+                            </tr>`).join('') : `<tr><td colspan="6" class="px-6 py-8 text-center text-slate-400 text-sm">No hay cultivos activos registrados.</td></tr>`}
                         </tbody>
                     </table>
                 </div>
@@ -156,19 +171,44 @@ window.app.views.bancoCelulas = {
         </div>
     `,
 
-    // --- INCUBADORAS ---
+    // --- INCUBADORAS (CONECTADO A BACKEND) ---
     incubadoras: (incubators) => `
         <div class="p-8 h-full flex flex-col animate-fade-in">
-            <h2 class="text-2xl font-black text-xelle-navy mb-6">Flota de Incubadoras</h2>
+            <h2 class="text-2xl font-black text-xelle-navy mb-6">Flota de Incubadoras (Tiempo Real)</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                ${incubators.map(inc => `
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-                    <h4 class="font-black text-xelle-navy text-lg">${inc.id}</h4>
-                    <div class="grid grid-cols-2 gap-4 mt-2">
-                        <div class="bg-slate-50 rounded-lg p-2 text-center"><p class="text-xl font-black text-slate-700">${inc.temp}°C</p></div>
-                        <div class="bg-slate-50 rounded-lg p-2 text-center"><p class="text-xl font-black text-slate-700">${inc.co2}%</p></div>
-                    </div>
-                </div>`).join('')}
+                ${incubators.map(inc => {
+                    // AJUSTE DE COLORES SEGÚN ESTADO
+                    let borderColor = "border-slate-200";
+                    let iconColor = "text-slate-400";
+                    let statusColor = "bg-slate-100 text-slate-500";
+                    
+                    if (inc.estado === 'ok') { borderColor = "border-emerald-200"; iconColor = "text-emerald-500"; statusColor = "bg-emerald-100 text-emerald-700"; }
+                    if (inc.estado === 'warning') { borderColor = "border-orange-200"; iconColor = "text-orange-500"; statusColor = "bg-orange-100 text-orange-700"; }
+                    if (inc.estado === 'error') { borderColor = "border-red-200"; iconColor = "text-red-500"; statusColor = "bg-red-100 text-red-700"; }
+
+                    // AJUSTE DE VARIABLES (temperaturaActual, co2Actual)
+                    return `
+                    <div class="bg-white rounded-2xl border ${borderColor} shadow-sm p-5 relative overflow-hidden group hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-4">
+                            <h4 class="font-black text-xelle-navy text-lg">${inc.id}</h4>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${statusColor}">${inc.estado}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-slate-50 rounded-lg p-3 text-center">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase">Temp</p>
+                                <p class="text-2xl font-black text-slate-700">${inc.temperaturaActual}°C</p>
+                            </div>
+                            <div class="bg-slate-50 rounded-lg p-3 text-center">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase">CO2</p>
+                                <p class="text-2xl font-black text-slate-700">${inc.co2Actual}%</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-slate-400">Humedad: ${inc.humedadActual}%</span>
+                            <span class="material-symbols-outlined ${iconColor}">thermostat</span>
+                        </div>
+                    </div>`;
+                }).join('')}
             </div>
         </div>
     `,
@@ -187,7 +227,7 @@ window.app.views.bancoCelulas = {
         </div>
     `,
 
-    // --- COMPONENTS ---
+    // --- COMPONENTES REUTILIZABLES ---
     components: {
         navBtn: (id, icon, label) => `<button id="nav-btn-${id}" onclick="window.app.bancoCelulas.navigateTo('${id}')" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all w-full text-left group text-slate-500 hover:bg-slate-50 hover:text-xelle-navy"><span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">${icon}</span><span class="text-xs font-bold tracking-wide">${label}</span></button>`,
         kpiCard: (icon, title, value, sub, color) => {

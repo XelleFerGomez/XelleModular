@@ -6,71 +6,72 @@
 window.app = window.app || {};
 window.app.services = window.app.services || {};
 
-// URL Base de tu API Java
 const API_BASE_URL = 'http://localhost:8080/api';
 
 window.app.services.bancoCelulas = {
     
-    // --- 1. RECEPCIÓN (CONEXIÓN REAL) ---
+    // --- 1. RECEPCIÓN ---
     saveReception: async function(loteData) {
-        console.log("📡 Enviando datos a Spring Boot:", loteData);
-        
+        console.log("📡 Enviando recepción a Backend:", loteData);
         try {
             const response = await fetch(`${API_BASE_URL}/lotes`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(loteData)
             });
-
-            if (!response.ok) {
-                throw new Error(`Error del servidor: ${response.status}`);
-            }
-
-            const data = await response.json();
-            console.log("✅ Guardado en PostgreSQL:", data);
-            return data;
-            
+            if (!response.ok) throw new Error(`Error BD: ${response.status}`);
+            return await response.json();
         } catch (error) {
-            console.error("❌ Error de conexión:", error);
+            console.error("❌ Error saveReception:", error);
             throw error;
         }
     },
 
-    // --- 2. DATOS SIMULADOS (MOCK) ---
-    // (Estos se conectarán en el siguiente Sprint, por ahora simulamos para que no se rompa el dashboard)
+    // --- 2. CULTIVOS ---
+    getCultures: async function() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/cultivos`);
+            if (!response.ok) return []; 
+            return await response.json();
+        } catch (error) {
+            console.warn("⚠️ Backend desconectado (cultivos), retornando vacío.");
+            return []; 
+        }
+    },
     
+    saveCulture: async function(cultureData) {
+        const response = await fetch(`${API_BASE_URL}/cultivos`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cultureData)
+        });
+        return await response.json();
+    },
+
+    // --- 3. INCUBADORAS (AHORA REAL) ---
+    getIncubators: async function() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/incubadoras`);
+            if (!response.ok) throw new Error("Error fetching incubadoras");
+            return await response.json();
+        } catch (error) {
+            console.warn("⚠️ Backend desconectado (incubadoras), usando Mock de respaldo.");
+            // Respaldo visual por si el backend está apagado
+            return [
+                { id: 'OFFLINE-1', temperaturaActual: 0, co2Actual: 0, humedadActual: 0, estado: 'error' }
+            ];
+        }
+    },
+
+    // --- 4. DASHBOARD & ALERTAS (MOCK - Próximo Sprint) ---
     getDashboardStats: async function() {
-        return {
-            activeCultures: 124,
-            quarantine: 8,
-            totalVials: 4520,
-            incubatorUsage: 72
-        };
+        return { activeCultures: 124, quarantine: 8, totalVials: 4520, incubatorUsage: 72 };
     },
 
     getAlerts: async function() {
         return [
-            { type: 'critical', msg: 'Temp. Incubadora 4 fuera de rango (+0.5°C)', time: '10 min' },
-            { type: 'warning', msg: 'Lote TPL-DG-09 requiere cambio de medio', time: '2 h' },
-            { type: 'info', msg: 'Nuevo ingreso de tejido pendiente de validación', time: '4 h' }
-        ];
-    },
-
-    getCultures: async function() {
-        return [
-            { id: 'CULT-24-081', line: 'MSC-Wharton', pass: 'P3', location: 'INC-01', confluency: 85, status: 'Optimal' },
-            { id: 'CULT-24-082', line: 'Fibroblastos', pass: 'P5', location: 'INC-02', confluency: 95, status: 'Harvest Ready' }
-        ];
-    },
-
-    getIncubators: async function() {
-        return [
-            { id: 'INC-01', temp: 37.0, co2: 5.0, hum: 95, status: 'ok' },
-            { id: 'INC-02', temp: 37.1, co2: 4.9, hum: 94, status: 'warning' },
-            { id: 'INC-03', temp: 36.9, co2: 5.0, hum: 95, status: 'ok' },
-            { id: 'INC-04', temp: 37.5, co2: 5.2, hum: 90, status: 'error' }
+            { type: 'critical', msg: 'Temp. Incubadora 4 fuera de rango', time: '10 min' },
+            { type: 'warning', msg: 'Lote TPL-DG-09 requiere cambio de medio', time: '2 h' }
         ];
     }
 };

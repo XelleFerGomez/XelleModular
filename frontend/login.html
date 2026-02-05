@@ -1,99 +1,191 @@
 <!DOCTYPE html>
-<html class="light" lang="es">
+<html lang="es">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Xelle System - Acceso</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xelle System - Acceso Seguro</title>
     
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
     <script>
         tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              colors: {
-                "primary": "#2FA583",      /* Verde Corporativo Exacto */
-                "primary-hover": "#258569",
-                "xelle-navy": "#1E3A5F",   /* Azul Navy Corporativo */
-                "bg-light": "#F4F8F6",     /* Fondo suave */
-              },
-              fontFamily: { "display": ["Manrope", "sans-serif"] },
-            },
-          },
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2FA583",
+                        "primary-hover": "#258569",
+                        "xelle-navy": "#1E3A5F",
+                        "bg-light": "#F4F8F6"
+                    },
+                    fontFamily: { "display": ["Manrope", "sans-serif"] },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
+                    }
+                }
+            }
         }
     </script>
-    <style>
-        .glass-card {
-            background: rgba(255, 255, 255, 0.90); /* Un poco más opaco para seriedad */
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 25px 50px -12px rgba(30, 58, 95, 0.15); /* Sombra basada en Navy */
-        }
-        body {
-            background-color: #F4F8F6; /* bg-light */
-        }
-    </style>
 </head>
-<body class="font-display min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
-    
-    <div class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-xelle-navy/10 rounded-full blur-[150px] -z-10"></div>
-    <div class="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[150px] -z-10"></div>
-    
-    <div class="w-full max-w-[460px] relative z-10">
-        <div class="flex flex-col items-center mb-10">
-            <img src="assets/icono.svg" alt="Xelle Logo" class="w-16 h-16 object-contain mb-4 drop-shadow-sm">
-            <h1 class="text-xelle-navy text-4xl font-extrabold tracking-tight leading-none">Xelle <span class="text-primary">System</span></h1>
-            <p class="text-xelle-navy/70 text-sm font-bold tracking-wide mt-2 text-center">Sistema gestión integral laboratorio Xelle Scientific</p>
-        </div>
+<body class="bg-bg-light h-screen flex items-center justify-center relative overflow-hidden font-display selection:bg-primary/30">
 
-        <div class="glass-card rounded-2xl p-8 md:p-10">
-            <div class="mb-8">
-                <h2 class="text-xelle-navy text-2xl font-bold mb-2">Bienvenido</h2>
-                <p class="text-slate-500 text-sm font-medium">Ingrese sus credenciales para continuar</p>
-            </div>
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+        <div class="absolute top-[-10%] right-[-10%] w-96 h-96 bg-xelle-navy/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-blue-300/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+    </div>
 
-            <div id="loginError" class="hidden flex items-center gap-3 p-4 mb-6 bg-red-50 border-l-4 border-red-500 rounded-r-lg animate-pulse">
-                <span class="material-symbols-outlined text-red-500">error</span>
-                <p class="text-red-700 text-sm font-bold">Usuario o contraseña incorrectos</p>
+    <div class="relative z-10 w-full max-w-md p-8">
+        
+        <div class="bg-white/80 backdrop-blur-xl border border-white/50 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-10 relative overflow-hidden">
+            
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-xelle-navy via-primary to-xelle-navy"></div>
+
+            <div class="text-center mb-10">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 mb-4 shadow-inner border border-primary/10">
+                    <span class="material-symbols-outlined text-3xl text-primary">biotech</span>
+                </div>
+                <h1 class="text-2xl font-extrabold text-xelle-navy tracking-tight">Xelle System</h1>
+                <p class="text-sm text-slate-500 font-medium mt-1">LIMS & Gestión de Producción</p>
             </div>
 
             <form id="loginForm" class="space-y-6">
-                <div class="flex flex-col gap-2">
-                    <label class="text-xelle-navy text-xs font-bold uppercase tracking-widest ml-1">Usuario</label>
-                    <div class="relative group">
-                        <input id="username" class="w-full h-12 pl-12 pr-4 bg-white border-2 border-slate-200 rounded-xl text-xelle-navy font-bold placeholder:text-slate-400 placeholder:font-medium focus:border-primary focus:ring-0 outline-none transition-all" placeholder="Ej. admin" type="text" required/>
-                        <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
-                            <span class="material-symbols-outlined">person</span>
+                
+                <div class="space-y-1 group">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1 group-focus-within:text-primary transition-colors">Usuario</label>
+                    <div class="relative transition-all duration-300 transform group-focus-within:scale-[1.02]">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors">person</span>
                         </div>
+                        <input type="text" id="username" 
+                            class="block w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xelle-navy font-bold placeholder-slate-400 focus:outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                            placeholder="Ej. Xelle_Fer">
                     </div>
                 </div>
 
-                <div class="flex flex-col gap-2">
-                    <label class="text-xelle-navy text-xs font-bold uppercase tracking-widest ml-1">Contraseña</label>
-                    <div class="relative group">
-                        <input id="password" class="w-full h-12 pl-12 pr-4 bg-white border-2 border-slate-200 rounded-xl text-xelle-navy font-bold placeholder:text-slate-400 placeholder:font-medium focus:border-primary focus:ring-0 outline-none transition-all" placeholder="••••••••" type="password" required/>
-                        <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
-                            <span class="material-symbols-outlined">lock</span>
+                <div class="space-y-1 group">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1 group-focus-within:text-primary transition-colors">Contraseña</label>
+                    <div class="relative transition-all duration-300 transform group-focus-within:scale-[1.02]">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors">lock</span>
                         </div>
+                        <input type="password" id="password" 
+                            class="block w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xelle-navy font-bold placeholder-slate-400 focus:outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                            placeholder="••••••••">
                     </div>
                 </div>
 
-                <button class="w-full h-12 bg-xelle-navy hover:bg-[#152a45] text-white font-bold text-lg rounded-xl shadow-md transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 mt-8" type="submit">
-                    <span>Iniciar Sesión</span>
-                    <span class="material-symbols-outlined text-[20px]">login</span>
+                <button type="submit" id="btnSubmit"
+                    class="w-full bg-xelle-navy hover:bg-[#152a45] text-white font-bold py-4 rounded-xl shadow-lg shadow-xelle-navy/20 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl flex items-center justify-center gap-2 group">
+                    <span>INICIAR SESIÓN</span>
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </button>
+
+                <div id="manualLoginContainer" class="hidden text-center mt-4 animate-pulse">
+                    <p class="text-xs text-green-600 font-bold mb-2">✅ Credenciales Correctas</p>
+                    <a href="index.html" class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-lg shadow-md hover:bg-primary-hover transition-colors">
+                        Clic aquí para entrar al Dashboard
+                        <span class="material-symbols-outlined text-sm">open_in_new</span>
+                    </a>
+                </div>
+
             </form>
+
+            <div class="mt-8 text-center">
+                <p class="text-xs text-slate-400 font-medium">
+                    © 2026 Xelle Scientific. V1.3.0 (Embedded)
+                </p>
+            </div>
         </div>
-        
-        <p class="text-center text-slate-500 text-xs font-bold mt-8">
-            © 2024 Xelle Scientific. Todos los derechos reservados.
-        </p>
     </div>
 
-    <script src="js/config-users.js"></script>
-    <script src="js/core/auth.js"></script>
+    <script>
+        window.SeedData = {
+            users: [
+                {
+                    id: 1,
+                    username: "Xelle_Fer",
+                    pass: "123",
+                    fullName: "Luis Fernando Gómez",
+                    role: "super_admin",
+                    moduleAccess: ["all"]
+                },
+                {
+                    id: 2,
+                    username: "calidad",
+                    pass: "123",
+                    fullName: "Gerente de Calidad",
+                    role: "quality_manager",
+                    moduleAccess: ["lab-calidad"]
+                }
+            ]
+        };
+        console.log("✅ Datos de usuario cargados internamente.");
+    </script>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const userClean = document.getElementById('username').value.trim();
+            const passClean = document.getElementById('password').value.trim();
+            const btn = document.getElementById('btnSubmit');
+            const manualLink = document.getElementById('manualLoginContainer');
+            
+            const originalBtnContent = btn.innerHTML;
+
+            // 1. Cargando...
+            btn.innerHTML = '<span class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"></span> Verificando...';
+            btn.classList.add('opacity-80', 'cursor-wait');
+
+            setTimeout(() => {
+                // 2. Buscar Usuario (Usando los datos de arriba)
+                const foundUser = window.SeedData.users.find(u => 
+                    u.username === userClean && u.pass === passClean
+                );
+
+                if (foundUser) {
+                    // --- ÉXITO ---
+                    console.log("Acceso concedido:", foundUser.fullName);
+                    
+                    // Guardar sesión
+                    localStorage.setItem('xelle_user', JSON.stringify(foundUser));
+                    
+                    // Cambiar botón a verde
+                    btn.classList.remove('bg-xelle-navy', 'hover:bg-[#152a45]');
+                    btn.classList.add('bg-primary');
+                    btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> ¡Bienvenido!';
+
+                    // INTENTO 1: Redirección Automática
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 500);
+
+                    // PLAN B: Botón manual (Aparece si falla la redirección automática)
+                    setTimeout(() => {
+                        manualLink.classList.remove('hidden');
+                        btn.style.display = 'none'; 
+                    }, 1500);
+
+                } else {
+                    // --- ERROR ---
+                    alert("❌ Usuario o contraseña incorrectos.");
+                    btn.innerHTML = originalBtnContent;
+                    btn.classList.remove('bg-primary', 'opacity-80', 'cursor-wait');
+                    btn.classList.add('bg-xelle-navy');
+                }
+            }, 600);
+        });
+    </script>
 </body>
 </html>

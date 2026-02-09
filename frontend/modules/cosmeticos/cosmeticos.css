@@ -1,0 +1,116 @@
+/* Estilos del Módulo Cosméticos */
+
+/* Animación de entrada del modal */
+@keyframes scale-in {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-scale-in {
+    animation: scale-in 0.3s ease-out;
+}
+
+/* Estilos para tabs */
+.tab-button {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-button.active {
+    color: #E91E63;
+    border-bottom-color: #E91E63 !important;
+}
+
+.tab-button:not(.active):hover {
+    color: #333;
+}
+
+.tab-content {
+    animation: fade-in 0.3s ease-out;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Estilos para tablas */
+table tr:hover {
+    background-color: #f9fafb;
+}
+
+table th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+    color: #374151;
+}
+
+/* Estilos para estados */
+.estado-disponible {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.estado-bajo-stock {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* Estilos para KPI cards */
+.kpi-card {
+    background: linear-gradient(135deg, var(--start-color), var(--end-color));
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal overlay */
+#modalOverlay {
+    animation: fade-in 0.2s ease-out;
+}
+
+/* Input focus styles */
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #EC4899 !important;
+    box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+}
+
+/* Button transitions */
+button {
+    transition: all 0.2s ease;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* Tabla responsiva */
+@media (max-width: 768px) {
+    table {
+        font-size: 0.875rem;
+    }
+    
+    table th,
+    table td {
+        padding: 0.75rem 0.5rem;
+    }
+}
+
+/* Scroll suave */
+html {
+    scroll-behavior: smooth;
+}

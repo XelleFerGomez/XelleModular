@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/cosmeticos.css">
 
     <script>
         tailwind.config = {
@@ -167,6 +168,18 @@
                     <p class="text-xs text-slate-500 mt-1">Usuarios y Sistema</p>
                 </div>
 
+                <div class="module-card group cursor-pointer bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center relative overflow-hidden"
+                    onclick="document.getElementById('view-dashboard').classList.add('hidden'); document.getElementById('view-module').classList.remove('hidden'); window.app.cosmeticos.init()">
+                    <div
+                        class="absolute top-0 left-0 w-full h-1 bg-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300">
+                    </div>
+                    <img src="assets/icons/Cosmeticos.ico"
+                        class="w-16 h-16 object-contain mb-4 group-hover:scale-110 transition-transform">
+                    <h3 class="text-lg font-bold text-xelle-navy group-hover:text-pink-600 transition-colors">
+                        Cosméticos</h3>
+                    <p class="text-xs text-slate-500 mt-1">Fórmulas y Producción</p>
+                </div>
+
             </div>
         </div>
 
@@ -180,6 +193,4 @@
     <script src="modules/banco-celulas/views.js"></script>
     
     <script src="modules/banco-celulas/banco-celulas.js"></script>
-
-</body>
-</html>
+    <script src="modules/cosmeticos/cosmeticos.js"></script>

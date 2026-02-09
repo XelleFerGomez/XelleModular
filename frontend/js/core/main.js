@@ -44,11 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function updateUserInterface() {
     // Buscar elementos del DOM donde va el nombre del usuario
-    const userNameElement = document.getElementById('user-name-display');
-    const userRoleElement = document.getElementById('user-role-display');
+    const userNameElement = document.getElementById('userNameDisplay');
+    const userRoleElement = document.getElementById('userRoleDisplay');
 
     if (window.currentUser) {
-        if (userNameElement) userNameElement.innerText = window.currentUser.fullName;
+        if (userNameElement) userNameElement.innerText = window.currentUser.fullName || 'Usuario';
         if (userRoleElement) userRoleElement.innerText = formatRole(window.currentUser.role);
     }
 }
@@ -81,17 +81,50 @@ window.app.navigateTo = function(moduleId) {
     
     const dashboardView = document.getElementById('view-dashboard');
     const moduleView = document.getElementById('view-module');
+    const breadcrumb = document.getElementById('breadcrumb');
+    const titleElem = document.getElementById('currentModuleTitle');
 
     if (moduleId === 'dashboard') {
         dashboardView.classList.remove('hidden');
         moduleView.classList.add('hidden');
-        moduleView.innerHTML = ''; // Limpiar módulo anterior
+        moduleView.innerHTML = '';
+        breadcrumb.classList.add('hidden');
     } else {
-        // Ocultar dashboard principal
         dashboardView.classList.add('hidden');
         moduleView.classList.remove('hidden');
+        breadcrumb.classList.remove('hidden');
+        
+        // Actualizar nombre del módulo en breadcrumb
+        const moduleNames = {
+            'comercial': '💼 Comercial',
+            'lab-calidad': '🔬 Lab Calidad',
+            'almacen': '📦 Almacén',
+            'banco-celulas': '🧬 Banco de Células',
+            'biblioteca-sgc': '📚 Biblioteca SGC',
+            'administracion': '⚙️ Administración',
+            'configuracion': '🔧 Configuración',
+            'cosmeticos': '💄 Cosméticos'
+        };
+        
+        if (titleElem) titleElem.innerText = moduleNames[moduleId] || moduleId;
+    }
+};
 
-        // Aquí se cargaría el módulo específico si no fuera el Banco de Células
-        // (El Banco de Células tiene su propio init en el index.html)
+// Función para ir al home/dashboard
+window.app.goHome = function() {
+    const dashboardView = document.getElementById('view-dashboard');
+    const moduleView = document.getElementById('view-module');
+    const breadcrumb = document.getElementById('breadcrumb');
+    
+    dashboardView.classList.remove('hidden');
+    moduleView.classList.add('hidden');
+    breadcrumb.classList.add('hidden');
+};
+
+// Función para logout
+window.logout = function() {
+    if(confirm("¿Estás seguro de cerrar sesión?")) {
+        localStorage.removeItem('xelle_user');
+        window.location.href = 'login.html';
     }
 };

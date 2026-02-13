@@ -2,244 +2,315 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>FO-LC-32 Liberación QC</title>
+    <title>FO-LC-32 Dictamen de Liberación de Lote</title>
     <link rel="stylesheet" href="format-styles.css">
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="format-app.js"></script>
     <style>
-        .decision-box {
-            border: 2px solid #333;
-            background-color: #f9f9f9;
-            padding: 15px;
-            margin-top: 15px;
-            text-align: center;
+        /* Estilos de Impresión */
+        @media print {
+            .no-print { display: none !important; }
+            .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 9px; background: white; }
+            body { padding-bottom: 50px; }
+            select { appearance: none; -webkit-appearance: none; border: none; background: transparent; padding: 0; font-weight: bold; color: black; }
         }
+        
+        /* Estilo Navy Blue solicitado */
+        .section-header { 
+            background-color: #1E3A5F; 
+            color: white; 
+            padding: 6px 10px; 
+            font-weight: 800; 
+            font-size: 12px; 
+            margin-top: 15px; 
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         .status-select {
-            font-size: 14px;
-            font-weight: 900;
-            padding: 8px;
-            width: 200px;
-            text-align-last: center;
-            border: 2px solid #2c3e50;
-            border-radius: 5px;
-        }
-        .param-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 5px;
-            background: #fff;
-            padding: 5px;
-            border: 1px solid #eee;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 4px;
+            padding: 4px;
         }
     </style>
 </head>
 <body id="doc-fo-lc-32">
+    
     <div class="global-controls no-print">
         <button class="btn btn-success" onclick="saveForm()">Guardar</button>
-        <button class="btn btn-primary" onclick="printForm()">Imprimir</button>
+        <button class="btn btn-primary" onclick="window.print()">Imprimir</button>
         <button class="btn btn-danger" onclick="clearForm()">Limpiar</button>
     </div>
 
     <div class="container">
         <div class="header-top">
             <div class="logo-container">
-                <svg viewBox="0 0 320 80"><defs><style>.svg-logo-titulo{font-family:'Arial Black',sans-serif;font-weight:900;fill:#1D1D1B}.svg-logo-subtitulo{font-family:'Arial',sans-serif;font-weight:700;fill:#1D1D1B;letter-spacing:2px}.svg-logo-celula{fill:#2E9D82}</style></defs><g transform="translate(0, -2) scale(0.85)"><circle class="svg-logo-celula" cx="25" cy="25" r="13"/><circle class="svg-logo-celula" cx="75" cy="75" r="13"/><path class="svg-logo-celula" d="M15.81,65.81C28.54,53.08 33.74,59.19 46.46,46.46C59.19,33.74 53.08,28.54 65.81,15.81A13 13 0 1 1 84.19,34.19C71.46,46.92 66.26,40.81 53.54,53.54C40.81,66.26 46.92,71.46 34.19,84.19A13 13 0 1 1 15.81,65.81Z"/></g><text x="90" y="42" class="svg-logo-titulo" font-size="34">XELLE</text><text x="91" y="68" class="svg-logo-subtitulo" font-size="19">SCIENTIFIC</text><text x="215" y="35" font-family="Arial" font-size="10" fill="#1D1D1B">®</text></svg>
+                <svg viewBox="0 0 320 80">
+                    <defs> <style> .t { font-family: 'Arial Black', sans-serif; font-weight: 900; fill: #1D1D1B; } .s { font-family: 'Arial', sans-serif; font-weight: 700; fill: #1D1D1B; letter-spacing: 2px; } .c { fill: #2E9D82; } </style> </defs>
+                    <g transform="translate(0, -2) scale(0.85)"> <circle class="c" cx="25" cy="25" r="13"/> <circle class="c" cx="75" cy="75" r="13"/> <path class="c" d="M 15.81,65.81 C 28.54,53.08 33.74,59.19 46.46,46.46 C 59.19,33.74 53.08,28.54 65.81,15.81 A 13 13 0 1 1 84.19,34.19 C 71.46,46.92 66.26,40.81 53.54,53.54 C 40.81,66.26 46.92,71.46 34.19,84.19 A 13 13 0 1 1 15.81,65.81 Z"/> </g>
+                    <text x="90" y="42" class="t" font-size="34">XELLE</text> <text x="91" y="68" class="s" font-size="19">SCIENTIFIC</text> <text x="215" y="35" font-family="Arial" font-size="10" fill="#1D1D1B">®</text>
+                </svg>
             </div>
             <div class="registry-container">
-                <label>Lote a Liberar</label>
+                <label>Dictamen de Liberación</label>
                 <div class="registry-wrapper">
                     <span class="registry-prefix">FO-LC-32-</span>
-                    <input type="text" id="reg-32" 
-                           class="registry-input generate-barcode" 
-                           data-target="barcode-32" 
-                           data-prefix="FO-LC-32-"
-                           placeholder="LOTE">
+                    <input type="text" id="reg-32" class="registry-input generate-barcode" data-target="barcode-32" data-prefix="FO-LC-32-" placeholder="000">
                 </div>
-                <input type="date" class="registry-date no-auto-date">
+                <input type="date" class="registry-date">
                 <svg id="barcode-32" class="barcode-svg"></svg>
             </div>
         </div>
 
         <div class="header-main">
-            <h1>FORMATO DE CONTROL DE CALIDAD PARA LIBERACIÓN DE LOTES</h1>
-            <div class="metadata">Código: FO-LC-32 | Versión: 1.0 | Vig: Ene2026</div>
+            <h1>DICTAMEN DE LIBERACIÓN DE LOTE (PRODUCTO TERMINADO)</h1>
+            <div class="metadata">Código: FO-LC-32 | Versión: 2.0 | Vigencia: 2026</div>
         </div>
 
+        <div class="section-header">1. IDENTIFICACIÓN DEL PRODUCTO Y LOTE</div>
         <div class="section">
-            <div class="section-title">1. INFORMACIÓN GENERAL DEL LOTE</div>
             <table class="no-border-table">
                 <tr>
-                    <td width="20%"><strong>Nombre del Producto:</strong></td>
-                    <td width="80%">
-                        <select class="cedit" style="font-weight:bold;">
-                            <option value="">- Seleccione -</option>
-                            <option value="STEM">Stem Xelle</option>
-                            <option value="ORTHO">Stem Ortho</option>
-                            <option value="HYBRID">Hybrid Xelle</option>
-                            <option value="EXO">X-Exosomes</option>
-                            <option value="BREATH">X-Breath Nebulizer</option>
+                    <td width="20%"><strong>Línea de Producto:</strong></td>
+                    <td width="30%">
+                        <select class="cedit" id="product-family" onchange="updatePresentations()">
+                            <option value="">- Seleccionar Familia -</option>
+                            <option value="stem_xelle">Stem Xelle (Células)</option>
+                            <option value="hybrid_xelle">Hybrid Xelle (Células + Exos)</option>
+                            <option value="x_exosomes">X-Exosomes (Exosomas)</option>
+                            <option value="x_breath">X-Breath Nebulizer</option>
+                            <option value="x_implant">X-Implant</option>
+                            <option value="x_wound">X-Wound Care</option>
+                            <option value="special">Especialidades (Factor/HA)</option>
+                        </select>
+                    </td>
+                    <td width="20%"><strong>Presentación / Dosis:</strong></td>
+                    <td width="30%">
+                        <select class="cedit" id="product-presentation">
+                            <option value="">- Seleccione Familia Primero -</option>
                         </select>
                     </td>
                 </tr>
-            </table>
-            <table class="compact-table" style="margin-top:5px;">
                 <tr>
-                    <td><strong>Número de Lote:</strong> <input class="cedit" placeholder="Escanee o ingrese lote"></td>
-                    <td><strong>Fecha Fabricación:</strong> <input type="date" class="cedit"></td>
-                    <td><strong>Fecha Vencimiento:</strong> <input type="date" class="cedit"></td>
+                    <td><strong>Lote Asignado:</strong></td>
+                    <td><input class="cedit" placeholder="Ej. XCM250430" style="font-weight:bold; font-family:monospace;"></td>
+                    <td><strong>Fecha Caducidad:</strong></td>
+                    <td><input class="cedit" placeholder="Ej. 28 ABR 2025"></td>
                 </tr>
                 <tr>
-                    <td><strong>Presentación / Forma:</strong> <input class="cedit" placeholder="Ej. Vial 2mL"></td>
-                    <td colspan="2"><strong>Cantidad Teórica del Lote:</strong> <input type="number" class="cedit" placeholder="Ej. 10,000 unidades"></td>
+                    <td><strong>Tamaño del Lote:</strong></td>
+                    <td><input class="cedit" type="number" style="width:80px"> Unidades</td>
+                    <td><strong>Fecha Manufactura:</strong></td>
+                    <td><input type="date" class="cedit"></td>
                 </tr>
             </table>
         </div>
 
+        <div class="section-header">2. RESULTADOS DE CONTROL DE CALIDAD</div>
         <div class="section">
-            <div class="section-title">2. EVALUACIÓN DE ACONDICIONAMIENTO</div>
             <table class="compact-table">
                 <thead>
                     <tr>
-                        <th width="20%">Material</th>
-                        <th width="40%">Descripción / Lote Material</th>
-                        <th width="20%">Evaluación</th>
-                        <th width="20%">Observaciones</th>
+                        <th width="30%">Ensayo / Parámetro</th>
+                        <th width="30%">Especificación</th>
+                        <th width="25%">Resultado</th>
+                        <th width="15%">Dictamen</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><strong>Envase Primario</strong></td>
-                        <td><input class="cedit" placeholder="Descripción..."></td>
-                        <td><select class="cedit"><option>CONFORME</option><option>NO CONFORME</option></select></td>
-                        <td><input class="cedit"></td>
+                        <td>Esterilidad (Bacterias/Hongos)</td>
+                        <td>Ausencia de crecimiento</td>
+                        <td><input class="cedit" value="NEGATIVO"></td>
+                        <td><select class="cedit"><option>CUMPLE</option><option>NO CUMPLE</option></select></td>
                     </tr>
                     <tr>
-                        <td><strong>Envase Secundario</strong></td>
-                        <td><input class="cedit" placeholder="Descripción..."></td>
-                        <td><select class="cedit"><option>CONFORME</option><option>NO CONFORME</option></select></td>
-                        <td><input class="cedit"></td>
+                        <td>Endotoxinas (LAL)</td>
+                        <td>&lt; 0.5 EU/mL</td>
+                        <td><input class="cedit" placeholder="Valor EU/mL"></td>
+                        <td><select class="cedit"><option>CUMPLE</option><option>NO CUMPLE</option></select></td>
                     </tr>
                     <tr>
-                        <td><strong>Etiquetado</strong></td>
-                        <td><input class="cedit" placeholder="Descripción..."></td>
-                        <td><select class="cedit"><option>CONFORME</option><option>NO CONFORME</option></select></td>
-                        <td><input class="cedit"></td>
+                        <td>Micoplasma (PCR)</td>
+                        <td>Negativo / No detectado</td>
+                        <td><input class="cedit" value="NO DETECTADO"></td>
+                        <td><select class="cedit"><option>CUMPLE</option><option>NO CUMPLE</option></select></td>
+                    </tr>
+                    <tr>
+                        <td>Viabilidad Celular (Si aplica)</td>
+                        <td>&ge; 80%</td>
+                        <td><input class="cedit" type="number" placeholder="%"> %</td>
+                        <td><select class="cedit"><option>CUMPLE</option><option>NO CUMPLE</option><option>N/A</option></select></td>
+                    </tr>
+                    <tr>
+                        <td>Conteo / Concentración</td>
+                        <td>Conforme a Dosis Declarada</td>
+                        <td><input class="cedit" placeholder="Total Células/Exos"></td>
+                        <td><select class="cedit"><option>CUMPLE</option><option>NO CUMPLE</option></select></td>
+                    </tr>
+                    <tr>
+                        <td>Inspección Visual (Aspecto)</td>
+                        <td>Libre de particulas, color conforme</td>
+                        <td><input class="cedit" value="CONFORME"></td>
+                        <td><select class="cedit"><option>CUMPLE</option><option>NO CUMPLE</option></select></td>
                     </tr>
                 </tbody>
             </table>
-
-            <div style="margin-top: 15px; padding: 10px; background-color: #f4f7f6; border: 1px solid #ddd;">
-                <strong style="display:block; margin-bottom:10px;">Parámetros Críticos del Proceso (Acondicionamiento):</strong>
-                
-                <div class="param-row">
-                    <span style="width:150px; font-size:11px;">Parámetro 1 (Ej. Velocidad):</span>
-                    <input class="cedit" style="width:200px;" placeholder="Nombre Parámetro">
-                    <span>Rango Aceptable:</span> <input class="cedit" style="width:100px;">
-                    <span>Valor Observado:</span> <input class="cedit" style="width:100px; font-weight:bold;">
-                </div>
-                
-                <div class="param-row">
-                    <span style="width:150px; font-size:11px;">Parámetro 2 (Ej. Temp):</span>
-                    <input class="cedit" style="width:200px;" placeholder="Nombre Parámetro">
-                    <span>Rango Aceptable:</span> <input class="cedit" style="width:100px;">
-                    <span>Valor Observado:</span> <input class="cedit" style="width:100px; font-weight:bold;">
-                </div>
-            </div>
         </div>
 
+        <div class="section-header">3. VERIFICACIÓN DE ACONDICIONAMIENTO Y ETIQUETADO</div>
         <div class="section">
-            <div class="section-title">3. MUESTREO PARA CONTROL DE CALIDAD</div>
-            <table class="no-border-table">
-                <tr>
-                    <td><strong>Cantidad Muestras Retiradas:</strong> <input type="number" class="cedit" style="width:80px"> unidades</td>
-                    <td><strong>Destino Muestras:</strong> <input class="cedit" placeholder="Ej. Archivo, Estabilidad, Terceros"></td>
-                </tr>
-                <tr>
-                    <td><strong>Persona que Tomó Muestra:</strong> <input class="cedit"></td>
-                    <td><strong>Firma:</strong> <input class="cedit"></td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="section">
-            <div class="section-title">4. REGISTRO DE RESULTADOS ANALÍTICOS (PRUEBAS DE LIBERACIÓN)</div>
-            <table id="tbl-analisis" class="compact-table">
+            <p style="font-size:10px; color:#666; margin-bottom:5px;">Verificar cumplimiento con Manual de Preparación de Dosis (Etiqueta, Volumen, Envase).</p>
+            <table class="compact-table">
                 <thead>
                     <tr>
-                        <th width="25%">Prueba / Análisis</th>
-                        <th width="25%">Especificación</th>
-                        <th width="25%">Resultado Obtenido</th>
-                        <th width="15%">Dictamen</th>
-                        <th width="10%" class="no-print"></th>
+                        <th>Punto de Control</th>
+                        <th>Criterio de Aceptación</th>
+                        <th>Verificación</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><input class="cedit" value="Apariencia / Integridad"></td>
-                        <td><input class="cedit" value="Sin partículas / Íntegro"></td>
-                        <td><input class="cedit"></td>
-                        <td><select class="cedit"><option>CUMPLE</option><option>NO CUMPLE</option></select></td>
-                        <td class="no-print"><button class="btn btn-danger btn-mini" onclick="this.closest('tr').remove()">x</button></td>
+                        <td>Volumen de Llenado</td>
+                        <td>Corresponde a la presentación (Ej. 3mL, 10mL)</td>
+                        <td><select class="cedit"><option>CONFORME</option><option>NO CONFORME</option></select></td>
                     </tr>
                     <tr>
-                        <td><input class="cedit" value="Esterilidad / Microbiológico"></td>
-                        <td><input class="cedit" value="Negativo / Ausencia"></td>
-                        <td><input class="cedit"></td>
-                        <td><select class="cedit"><option>CUMPLE</option><option>NO CUMPLE</option></select></td>
-                        <td class="no-print"><button class="btn btn-danger btn-mini" onclick="this.closest('tr').remove()">x</button></td>
+                        <td>Tipo de Vial / Envase</td>
+                        <td>Estándar / Ortho / Ámbar (Según Manual)</td>
+                        <td><select class="cedit"><option>CONFORME</option><option>NO CONFORME</option></select></td>
                     </tr>
                     <tr>
-                        <td><input class="cedit" value="Endotoxinas"></td>
-                        <td><input class="cedit" value="< 0.5 EU/mL"></td>
-                        <td><input class="cedit"></td>
-                        <td><select class="cedit"><option>CUMPLE</option><option>NO CUMPLE</option></select></td>
-                        <td class="no-print"><button class="btn btn-danger btn-mini" onclick="this.closest('tr').remove()">x</button></td>
+                        <td>Integridad del Cierre</td>
+                        <td>Sellado hermético, sin fugas</td>
+                        <td><select class="cedit"><option>CONFORME</option><option>NO CONFORME</option></select></td>
+                    </tr>
+                    <tr>
+                        <td>Datos en Etiqueta (LOT/CAD)</td>
+                        <td>Legible, formato correcto (Ej. XCMAAMMDD)</td>
+                        <td><select class="cedit"><option>CONFORME</option><option>NO CONFORME</option></select></td>
                     </tr>
                 </tbody>
             </table>
-            <button class="btn btn-primary btn-mini no-print" onclick="window.addGenericRow('tbl-analisis', `<td><input class='cedit'></td><td><input class='cedit'></td><td><input class='cedit'></td><td><select class='cedit'><option>CUMPLE</option><option>NO CUMPLE</option></select></td><td class='no-print'><button class='btn btn-danger btn-mini' onclick='this.closest(\'tr\').remove()'>x</button></td>`)">+ Agregar Prueba</button>
         </div>
 
-        <div class="section">
-            <div class="section-title">5. OBSERVACIONES Y DESVIACIONES</div>
-            <p style="font-size:10px; color:#666; margin-top:0;">(Registrar cualquier evento no planeado durante el acondicionamiento o análisis. Si no hay, escribir "Ninguna")</p>
-            <textarea class="cedit" rows="3" placeholder="..."></textarea>
-        </div>
-
-        <div class="section decision-box">
-            <h3 style="margin:0 0 10px 0;">DICTAMEN FINAL DEL LOTE</h3>
-            <div style="display:flex; justify-content:center; gap:30px; align-items:center;">
-                <div>
-                    <label style="display:block; font-size:11px; margin-bottom:5px;">Estado de Liberación:</label>
-                    <select class="status-select" onchange="this.style.backgroundColor = (this.value=='APROBADO') ? '#d4efdf' : (this.value=='RECHAZADO' ? '#fadbd8' : '#fff')">
+        <div class="section-header">4. DICTAMEN FINAL DE LIBERACIÓN</div>
+        <div class="section" style="border: 2px solid #1E3A5F; padding: 15px; margin-top: 10px; background-color: #f8fafc;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div style="width: 70%;">
+                    <label style="font-weight:bold; display:block;">Observaciones / Comentarios de Calidad:</label>
+                    <textarea class="cedit" rows="3" style="width:100%; border:1px solid #ccc; margin-top:5px;"></textarea>
+                </div>
+                <div style="width: 25%; text-align:center;">
+                    <label style="font-weight:bold; display:block; margin-bottom:10px;">ESTADO DEL LOTE:</label>
+                    <select class="cedit status-select" style="font-size:16px; padding:10px; width:100%;" onchange="updateStatusColor(this)">
                         <option value="">- SELECCIONAR -</option>
                         <option value="APROBADO">APROBADO / LIBERADO</option>
                         <option value="CUARENTENA">CUARENTENA</option>
                         <option value="RECHAZADO">RECHAZADO</option>
                     </select>
                 </div>
-                <div>
-                    <label style="display:block; font-size:11px; margin-bottom:5px;">Número de Registro de Liberación:</label>
-                    <input class="cedit" style="font-weight:bold; text-align:center; width:200px;" placeholder="Ej. RL-2026-001">
-                </div>
             </div>
-            <p style="font-size:10px; margin-top:10px; color:#555;">La firma a continuación certifica que el lote cumple con todas las especificaciones de calidad y regulaciones aplicables.</p>
         </div>
 
         <div class="signature-area">
             <div class="signature-box">
-                <p>Revisó (Aseguramiento de Calidad):</p>
+                <p>Elaboró (Control de Calidad)</p>
                 <input type="text" placeholder="Nombre y Firma">
+                <p>Fecha: <input type="date" class="cedit" style="width:100px"></p>
             </div>
             <div class="signature-box">
-                <p>Responsable Sanitario (Liberación Final):</p>
+                <p>Aprobó (Responsable Sanitario)</p>
                 <input type="text" placeholder="Nombre y Firma">
+                <p>Fecha: <input type="date" class="cedit" style="width:100px"></p>
             </div>
         </div>
 
-        <div class="footer">FO-LC-32 | Versión: 1.0 | Vigente a partir de: Enero2026<br>Este documento es parte esencial del registro maestro de lote (DHR/BMR) según GMP/ISO 13485.</div>
+        <div class="footer">
+            FO-LC-32 | Versión: 2.0 | Dictamen de Liberación de Lote | Propiedad de Xelle Scientific
+        </div>
     </div>
+
+    <script>
+        // Catálogo de Productos basado en el Manual de Preparación de Dosis
+        const productsDB = {
+            'stem_xelle': [
+                'Stem Xelle 10 M (Estándar - 3mL)', [cite: 2]
+                'Stem Xelle 25 M (Estándar - 5mL)', [cite: 2]
+                'Stem Xelle 50 M (Estándar - 10mL)', [cite: 2]
+                'Stem Xelle 100 M (Estándar - 20mL)', [cite: 2]
+                'Stem Xelle ORTHO 10 M (2mL)', [cite: 2]
+                'Stem Xelle ORTHO 25 M (2.5mL)', [cite: 2]
+                'Stem Xelle ORTHO 50 M (3mL)', [cite: 2]
+                'Stem Xelle ORTHO 100 M (5mL)' [cite: 2]
+            ],
+            'hybrid_xelle': [
+                'Hybrid 10M + 1B (Estándar)', [cite: 5]
+                'Hybrid 25M + 2B (Estándar)', [cite: 5]
+                'Hybrid 50M + 5B (Estándar)', [cite: 5]
+                'Hybrid 60M + 6B (Estándar)', [cite: 5]
+                'Hybrid 100M + 10B (Estándar)', [cite: 5]
+                'Hybrid ORTHO 10M + 1B', [cite: 5]
+                'Hybrid ORTHO 25M + 2B', [cite: 5]
+                'Hybrid ORTHO 50M + 5B', [cite: 5]
+                'Hybrid ORTHO 60M + 6B', [cite: 5]
+                'Hybrid ORTHO 100M + 10B' [cite: 5]
+            ],
+            'x_breath': ['X-Breath Nebulizer (Única - 4mL + 1mL Exos)'], [cite: 7]
+            'x_exosomes': [
+                'X-Exosomes 3B (1mL)', [cite: 11]
+                'X-Exosomes 9B (3mL)', [cite: 11]
+                'X-Exosomes 15B (5mL)', [cite: 11]
+                'X-Exosomes 30B (10mL)', [cite: 11]
+                'X-Exosomes 75B (25mL)', [cite: 11]
+                'X-Exosomes 90B (30mL)' [cite: 11]
+            ],
+            'special': [
+                'X-Exosomes HA (6.1mL + HA)', [cite: 14]
+                'Hi! Factor (Medio Liofilizado)', [cite: 14]
+                'AC Factor' [cite: 14]
+            ],
+            'x_implant': ['X-Implant 1 G (10mL Ámbar)', 'X-Implant 2 G'], [cite: 18]
+            'x_wound': [
+                'X-Wound Care 5x5 (7.5mL)', [cite: 20]
+                'X-Wound Care 10x10 (15mL)', [cite: 20]
+                'X-Wound Care 10x15 (20mL)' [cite: 20]
+            ]
+            // Regene excluido por solicitud del usuario
+        };
+
+        function updatePresentations() {
+            const family = document.getElementById('product-family').value;
+            const presentationSelect = document.getElementById('product-presentation');
+            
+            // Limpiar opciones anteriores
+            presentationSelect.innerHTML = '<option value="">- Seleccionar Presentación -</option>';
+
+            if (family && productsDB[family]) {
+                productsDB[family].forEach(prod => {
+                    const option = document.createElement('option');
+                    option.value = prod;
+                    option.text = prod;
+                    presentationSelect.appendChild(option);
+                });
+            }
+        }
+
+        function updateStatusColor(select) {
+            if(select.value === 'APROBADO') {
+                select.style.backgroundColor = '#dcfce7'; // Verde claro
+                select.style.color = '#166534';
+            } else if (select.value === 'RECHAZADO') {
+                select.style.backgroundColor = '#fee2e2'; // Rojo claro
+                select.style.color = '#991b1b';
+            } else {
+                select.style.backgroundColor = '#fef9c3'; // Amarillo
+                select.style.color = '#854d0e';
+            }
+        }
+    </script>
 </body>
 </html>

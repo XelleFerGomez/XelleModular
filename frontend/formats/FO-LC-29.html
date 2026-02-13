@@ -2,255 +2,336 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>FO-LC-29 Lote Celular</title>
+    <title>FO-LC-29 Hoja de Producción Lote Celular</title>
     <link rel="stylesheet" href="format-styles.css">
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="format-app.js"></script>
     <style>
-        .section-title { background-color: #2c3e50; color: white; padding: 5px 10px; font-weight: bold; margin-top: 15px; font-size: 12px; }
-        .calc-output { background-color: #f0f4f8; font-weight: bold; color: #333; }
-        .sig-block { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; background: #f9f9f9; }
-        
-        /* Ocultar placeholders al imprimir */
+        /* Estilos específicos para impresión */
         @media print {
-            input::placeholder, textarea::placeholder { color: transparent !important; opacity: 0 !important; }
+            .no-print { display: none !important; }
+            .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 9px; background: white; }
+            body { padding-bottom: 50px; }
+            
+            /* Ocultar filas vacías marcadas por JS */
+            tr.print-hidden { display: none !important; }
+            
+            /* Ajustes de tabla */
+            .btn-add-row { display: none; }
         }
+
+        .wide-select { font-size: 11px; font-weight: bold; width: 100%; }
+        .btn-add-row {
+            background-color: #e2e8f0; color: #475569; border: 1px dashed #cbd5e1;
+            width: 100%; padding: 5px; margin-top: 5px; cursor: pointer;
+            font-size: 10px; font-weight: bold; border-radius: 4px;
+        }
+        .btn-add-row:hover { background-color: #cbd5e1; }
+        .compact-table th { background-color: #f1f5f9; font-size: 10px; }
+        .section-header { background-color: #1E3A5F; color: white; padding: 5px 10px; font-weight: bold; font-size: 12px; margin-top: 15px; }
     </style>
 </head>
 <body id="doc-fo-lc-29">
+    
     <div class="global-controls no-print">
         <button class="btn btn-success" onclick="saveForm()">Guardar</button>
-        <button class="btn btn-primary" onclick="printForm()">Imprimir</button>
+        <button class="btn btn-primary" onclick="window.print()">Imprimir</button>
         <button class="btn btn-danger" onclick="clearForm()">Limpiar</button>
     </div>
 
     <div class="container">
         <div class="header-top">
             <div class="logo-container">
-                <svg viewBox="0 0 320 80"><defs><style>.svg-logo-titulo{font-family:'Arial Black',sans-serif;font-weight:900;fill:#1D1D1B}.svg-logo-subtitulo{font-family:'Arial',sans-serif;font-weight:700;fill:#1D1D1B;letter-spacing:2px}.svg-logo-celula{fill:#2E9D82}</style></defs><g transform="translate(0, -2) scale(0.85)"><circle class="svg-logo-celula" cx="25" cy="25" r="13"/><circle class="svg-logo-celula" cx="75" cy="75" r="13"/><path class="svg-logo-celula" d="M15.81,65.81C28.54,53.08 33.74,59.19 46.46,46.46C59.19,33.74 53.08,28.54 65.81,15.81A13 13 0 1 1 84.19,34.19C71.46,46.92 66.26,40.81 53.54,53.54C40.81,66.26 46.92,71.46 34.19,84.19A13 13 0 1 1 15.81,65.81Z"/></g><text x="90" y="42" class="svg-logo-titulo" font-size="34">XELLE</text><text x="91" y="68" class="svg-logo-subtitulo" font-size="19">SCIENTIFIC</text><text x="215" y="35" font-family="Arial" font-size="10" fill="#1D1D1B">®</text></svg>
+                <svg viewBox="0 0 320 80">
+                    <defs>
+                        <style> .svg-logo-titulo { font-family: 'Arial Black', sans-serif; font-weight: 900; fill: #1D1D1B; } .svg-logo-subtitulo { font-family: 'Arial', sans-serif; font-weight: 700; fill: #1D1D1B; letter-spacing: 2px; } .svg-logo-celula { fill: #2E9D82; } </style>
+                    </defs>
+                    <g transform="translate(0, -2) scale(0.85)">
+                        <circle class="svg-logo-celula" cx="25" cy="25" r="13"/>
+                        <circle class="svg-logo-celula" cx="75" cy="75" r="13"/>
+                        <path class="svg-logo-celula" d="M 15.81,65.81 C 28.54,53.08 33.74,59.19 46.46,46.46 C 59.19,33.74 53.08,28.54 65.81,15.81 A 13 13 0 1 1 84.19,34.19 C 71.46,46.92 66.26,40.81 53.54,53.54 C 40.81,66.26 46.92,71.46 34.19,84.19 A 13 13 0 1 1 15.81,65.81 Z"/>
+                    </g>
+                    <text x="90" y="42" class="svg-logo-titulo" font-size="34">XELLE</text>
+                    <text x="91" y="68" class="svg-logo-subtitulo" font-size="19">SCIENTIFIC</text>
+                    <text x="215" y="35" font-family="Arial" font-size="10" fill="#1D1D1B">®</text>
+                </svg>
             </div>
             <div class="registry-container">
-                <label>Lote PT</label>
+                <label>Lote de Producción</label>
                 <div class="registry-wrapper">
                     <span class="registry-prefix">FO-LC-29-</span>
-                    <input type="text" id="reg-29" class="registry-input generate-barcode" data-target="barcode-29" placeholder="Lote Final">
+                    <input type="text" id="reg-29" class="registry-input generate-barcode" data-target="barcode-29" data-prefix="FO-LC-29-" placeholder="000">
                 </div>
-                <input type="date" class="registry-date no-auto-date">
+                <input type="date" class="registry-date">
                 <svg id="barcode-29" class="barcode-svg"></svg>
             </div>
         </div>
 
         <div class="header-main">
-            <h1>REGISTRO DE LOTE DE PRODUCTO CELULAR (STEM/HYBRID)</h1>
-            <div class="metadata">Código: FO-LC-29 | Versión: 1.0 | Vig: Ene2026</div>
+            <h1>HOJA DE PRODUCCIÓN DE LOTE CELULAR</h1>
+            <div class="metadata">Código: FO-LC-29 | Versión: 1.0 | Vigencia: 2026</div>
         </div>
 
+        <div class="section-header">1. DATOS GENERALES DEL PROCESO</div>
         <div class="section">
-            <div class="section-title">1. INFORMACIÓN GENERAL DEL PRODUCTO</div>
             <table class="no-border-table">
                 <tr>
-                    <td width="35%"><strong>Nombre del Producto:</strong> 
-                        <select id="prod-select" class="cedit" onchange="updateProductLogic()">
-                            <option value="">- Seleccione -</option>
-                            <option value="STEM">Stem Xelle (Estándar)</option>
-                            <option value="ORTHO">Stem Ortho (Xelle)</option>
-                            <option value="HYBRID">Hybrid Xelle (Estándar)</option>
-                            <option value="HYBRID_ORTHO">Hybrid Ortho</option>
-                        </select>
-                    </td>
-                    <td width="20%"><strong>Conteo (M/mL):</strong> <input type="number" id="cell-conc" class="cedit" oninput="calcTotalCells()" placeholder="M/mL"></td>
-                    <td width="20%"><strong>Volumen Lote (mL):</strong> <input type="number" id="lot-vol" class="cedit" oninput="calcTotalCells()" placeholder="mL"></td>
-                    <td style="background-color:#e8f8f5;"><strong>Total Células (M):</strong> <input id="total-cells" class="cedit calc-output" readonly></td>
+                    <td width="25%"><strong>Fecha de Fabricación:</strong> <input type="date" class="cedit"></td>
+                    <td width="25%"><strong>Línea Celular (MP):</strong> <input class="cedit" placeholder="ID Línea/Donante"></td>
+                    <td width="25%"><strong>Laboratorio:</strong> <input class="cedit" value="Sala Blanca"></td>
+                    <td width="25%"><strong>Responsable:</strong> <input class="cedit" placeholder="Nombre Operador"></td>
                 </tr>
                 <tr>
-                    <td><strong>Número de Lote:</strong> <input class="cedit" id="lote-auto" placeholder="Prefijo + AAMMDD"></td>
-                    <td><strong>Fecha Fabricación:</strong> <input type="date" id="fecha-fab" class="cedit" onchange="updateProductLogic()"></td>
-                    <td><strong>Fecha Vencimiento:</strong> <input type="date" id="fecha-venc" class="cedit"></td>
+                    <td colspan="4"><strong>Observaciones Generales:</strong> <input class="cedit" placeholder="Condiciones iniciales..."></td>
                 </tr>
             </table>
-
-            <div style="margin-top:10px; border-top:1px solid #ddd; padding-top:5px;">
-                <strong>Detalle de Presentaciones Producidas:</strong>
-                <table id="tbl-presentaciones" class="compact-table" style="margin-top:5px;">
-                    <thead>
-                        <tr>
-                            <th width="60%">Presentación</th>
-                            <th width="30%">Cantidad Teórica (Unidades)</th>
-                            <th width="10%" class="no-print"></th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                    <tfoot>
-                        <tr>
-                            <td style="text-align:right; font-weight:bold;">TOTAL TEÓRICO:</td>
-                            <td><input type="number" id="total-teorico-global" class="cedit calc-output" readonly value="0"></td>
-                            <td class="no-print"></td>
-                        </tr>
-                    </tfoot>
-                </table>
-                <button class="btn btn-primary btn-mini no-print" onclick="addPresRow()">+ Agregar Presentación</button>
-            </div>
         </div>
 
+        <div class="section-header">2. RESULTADOS DE CONTEO CELULAR (PRE-ENVASADO)</div>
         <div class="section">
-            <div class="section-title">2. COMPONENTES DEL PRODUCTO (GRANEL / ORIGEN)</div>
-            <table id="tbl-componentes" class="compact-table">
-                <thead><tr><th width="25%">Componente</th><th width="20%">Proveedor / Origen</th><th width="15%">Lote</th><th width="15%">Caducidad</th><th width="10%">Cantidad</th><th width="10%">Unidad</th><th class="no-print" width="5%"></th></tr></thead>
-                <tbody></tbody>
-            </table>
-            <button class="btn btn-primary btn-mini no-print" onclick="addCompRow()">+ Agregar Componente</button>
-        </div>
-
-        <div class="section">
-            <div class="section-title">3. MATERIALES DE ACONDICIONAMIENTO</div>
-            <table id="tbl-materiales" class="compact-table">
-                <thead><tr><th width="25%">Producto</th><th width="20%">Tipo</th><th width="15%">Lote</th><th width="15%">Caducidad</th><th width="15%">Cantidad</th><th class="no-print" width="5%"></th></tr></thead>
-                <tbody></tbody>
-            </table>
-            <button class="btn btn-primary btn-mini no-print" onclick="addMatRow()">+ Agregar Material</button>
-        </div>
-
-        <div class="section">
-            <div class="section-title">5. REGISTRO DE INSPECCIÓN Y CONTROL</div>
-            <div style="margin-bottom: 5px;">
-                <strong>Lote:</strong> <input class="cedit" style="width: 200px;" placeholder="Lote proceso...">
-                <strong>REF:</strong> <input class="cedit" style="width: 150px;" placeholder="Referencia SOP...">
-            </div>
-            <table id="tbl-control" class="compact-table">
-                <thead><tr><th width="5%">ID (#)</th><th width="30%">Muestra / Verificación (Parámetro)</th><th width="10%">Código</th><th width="20%">Especificación</th><th width="10%">Resultado</th><th width="15%">Observaciones</th><th width="10%">Responsable</th><th class="no-print"></th></tr></thead>
-                <tbody></tbody>
-            </table>
-            <button class="btn btn-primary btn-mini no-print" onclick="addControlRow()">+ Control</button>
-        </div>
-
-        <div class="section">
-            <div class="section-title">6. RECONCILIACIÓN DE PRODUCTO</div>
             <table class="compact-table">
-                <tr><td width="40%"><strong>Total Producto Terminado Obtenido (Suma Unidades):</strong></td><td><input type="number" id="cant-real" class="cedit" oninput="calcYield()" placeholder="0"></td></tr>
-                <tr><td><strong>Mermas / Descarte Justificado:</strong></td><td><input type="number" class="cedit" placeholder="0"></td></tr>
-                <tr><td><strong>Causas:</strong></td><td><textarea class="cedit" rows="1" placeholder="Explique las causas..."></textarea></td></tr>
-                <tr><td style="background-color: #e8f6f3;"><strong>% Rendimiento:</strong></td><td style="background-color: #e8f6f3;"><input id="yield-percent" class="cedit calc-output" readonly></td></tr>
+                <tr>
+                    <td class="bg-gray"><strong>Conteo Total (Células):</strong></td>
+                    <td><input class="cedit" type="number"> x 10⁶</td>
+                    <td class="bg-gray"><strong>Viabilidad (%):</strong></td>
+                    <td><input class="cedit" type="number"> %</td>
+                </tr>
+                <tr>
+                    <td class="bg-gray"><strong>Volumen de Suspensión (mL):</strong></td>
+                    <td><input class="cedit" type="number"> mL</td>
+                    <td class="bg-gray"><strong>Dosis Totales Calculadas:</strong></td>
+                    <td><input class="cedit" type="number"> Unidades</td>
+                </tr>
             </table>
-            <div style="margin-top:5px;"><strong>Conclusión:</strong> <label><input type="radio" name="yield_status"> Dentro de límites</label> <label><input type="radio" name="yield_status"> Fuera de límites</label></div>
         </div>
 
+        <div class="section-header">3. DETALLE DE PRESENTACIONES PRODUCIDAS</div>
         <div class="section">
-            <div class="section-title">7. VERIFICACIONES Y APROBACIONES</div>
-            <div class="sig-block"><p><strong>Operador(es):</strong></p><div style="display:flex; gap:10px;"><span style="width:50px;">Nombre:</span> <input type="text" class="cedit" style="flex:1" placeholder="Nombre"><span style="width:40px;">Firma:</span> <input type="text" class="cedit" style="flex:1" placeholder="Firma"><span style="width:40px;">Fecha:</span> <input type="date" class="cedit" style="width:130px"></div></div>
-            <div class="sig-block"><p><strong>Supervisor:</strong> Verificó Proc: <label><input type="checkbox"> Sí</label> <label><input type="checkbox"> No</label></p><div style="display:flex; gap:10px;"><span style="width:50px;">Nombre:</span> <input type="text" class="cedit" style="flex:1" placeholder="Nombre"><span style="width:40px;">Firma:</span> <input type="text" class="cedit" style="flex:1" placeholder="Firma"><span style="width:40px;">Fecha:</span> <input type="date" class="cedit" style="width:130px"></div></div>
-            <div class="sig-block"><p><strong>Calidad (Liberación):</strong> Datos completos/Cumple: <label><input type="checkbox"> Sí</label> <label><input type="checkbox"> No</label></p><div style="display:flex; gap:10px;"><span style="width:50px;">Nombre:</span> <input type="text" class="cedit" style="flex:1" placeholder="Nombre"><span style="width:40px;">Firma:</span> <input type="text" class="cedit" style="flex:1" placeholder="Firma"><span style="width:40px;">Fecha:</span> <input type="date" class="cedit" style="width:130px"></div></div>
+            <table class="compact-table" id="tbl-productos">
+                <thead>
+                    <tr>
+                        <th width="20%">Producto</th>
+                        <th width="15%">Número de Lote</th>
+                        <th width="15%">Código Único</th>
+                        <th width="10%">Presentación</th>
+                        <th width="10%">Cant. Teórica</th>
+                        <th width="10%">Cant. Real</th>
+                        <th width="15%">Verificación</th>
+                        <th width="5%" class="no-print"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <select class="cedit wide-select">
+                                <option value="">- Seleccionar -</option>
+                                <option value="STEMXELLE">STEMXELLE</option>
+                                <option value="STEMXELLE ORTHO">STEMXELLE ORTHO</option>
+                                <option value="HYBRIDXELLE">HYBRIDXELLE</option>
+                                <option value="HYBRID ORTHO">HYBRID ORTHO</option>
+                                <option value="STEMXELLE ESPECIAL">STEMXELLE ESPECIAL</option>
+                                <option value="HYBRIDXELLE ESPECIAL">HYBRIDXELLE ESPECIAL</option>
+                            </select>
+                        </td>
+                        <td><input class="cedit" placeholder="Lote Final"></td>
+                        <td><input class="cedit" placeholder="SKU/ID"></td>
+                        <td><input class="cedit" placeholder="Volumen"></td>
+                        <td><input class="cedit" type="number"></td>
+                        <td><input class="cedit" type="number"></td>
+                        <td><input class="cedit" placeholder="Firma"></td>
+                        <td class="no-print" style="text-align:center;"><span style="cursor:pointer; color:red;" onclick="removeRow(this)">×</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="btn-add-row no-print" onclick="addProductRow()">[+] AGREGAR RENGLÓN DE PRODUCTO</button>
         </div>
 
+        <div class="section-header">4. TRAZABILIDAD DE MEDIOS Y REACTIVOS</div>
         <div class="section">
-            <div class="section-title">8. OBSERVACIONES</div>
-            <textarea class="cedit" rows="3" placeholder="Ninguna"></textarea>
+            <table class="compact-table" id="tbl-trazabilidad">
+                <thead>
+                    <tr>
+                        <th width="30%">Insumo / Reactivo</th>
+                        <th width="25%">Marca / Proveedor</th>
+                        <th width="20%">Lote</th>
+                        <th width="20%">Caducidad</th>
+                        <th width="5%" class="no-print"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input class="cedit" placeholder="Nombre Reactivo"></td>
+                        <td><input class="cedit"></td>
+                        <td><input class="cedit"></td>
+                        <td><input type="date" class="cedit"></td>
+                        <td class="no-print" style="text-align:center;"><span style="cursor:pointer; color:red;" onclick="removeRow(this)">×</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="btn-add-row no-print" onclick="addTrazaRow()">[+] AGREGAR REACTIVO</button>
         </div>
 
-        <div class="footer">FO-LC-29 | Versión: 1.0 | Vigente a partir de: Enero2026<br>Propiedad de “Xelle Scientific”.</div>
+        <div class="section-header">5. MATERIALES DE ACONDICIONAMIENTO</div>
+        <div class="section">
+            <table class="compact-table" id="tbl-acondicionamiento">
+                <thead>
+                    <tr>
+                        <th width="40%">Material (Vial, Tapón, Etiqueta, Caja)</th>
+                        <th width="25%">Lote</th>
+                        <th width="15%">Cantidad Usada</th>
+                        <th width="15%">Revisó</th>
+                        <th width="5%" class="no-print"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input class="cedit" placeholder="Descripción Material"></td>
+                        <td><input class="cedit"></td>
+                        <td><input class="cedit" type="number"></td>
+                        <td><input class="cedit"></td>
+                        <td class="no-print" style="text-align:center;"><span style="cursor:pointer; color:red;" onclick="removeRow(this)">×</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="btn-add-row no-print" onclick="addAcondRow()">[+] AGREGAR MATERIAL</button>
+        </div>
+
+        <div class="section-header">6. REGISTRO DE INSPECCIÓN Y CONTROL</div>
+        <div class="section">
+            <table class="compact-table">
+                <thead>
+                    <tr>
+                        <th width="30%">Parámetro</th>
+                        <th width="30%">Especificación</th>
+                        <th width="25%">Resultado / Hallazgo</th>
+                        <th width="15%">Cumple</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Integridad del Vial / Cierre</td>
+                        <td>Sin fugas, sellado hermético</td>
+                        <td><input class="cedit"></td>
+                        <td><select class="cedit"><option>SÍ</option><option>NO</option></select></td>
+                    </tr>
+                    <tr>
+                        <td>Partículas Extrañas</td>
+                        <td>Ausente (Visual)</td>
+                        <td><input class="cedit"></td>
+                        <td><select class="cedit"><option>SÍ</option><option>NO</option></select></td>
+                    </tr>
+                    <tr>
+                        <td>Identificación (Etiqueta)</td>
+                        <td>Legible, completa, adherida</td>
+                        <td><input class="cedit"></td>
+                        <td><select class="cedit"><option>SÍ</option><option>NO</option></select></td>
+                    </tr>
+                    <tr>
+                        <td>Volumen de Llenado</td>
+                        <td>Conforme a especificación</td>
+                        <td><input class="cedit"></td>
+                        <td><select class="cedit"><option>SÍ</option><option>NO</option></select></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section-header">7. RECONCILIACIÓN DE PRODUCTO</div>
+        <div class="section">
+            <table class="no-border-table">
+                <tr>
+                    <td><strong>Unidades Totales Fabricadas:</strong> <input class="cedit" type="number"></td>
+                    <td><strong>Muestras QC / Retención:</strong> <input class="cedit" type="number"></td>
+                    <td><strong>Mermas / Rechazos:</strong> <input class="cedit" type="number"></td>
+                    <td><strong>Rendimiento Final (%):</strong> <input class="cedit" type="number"> %</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section-header">8. VERIFICACIONES Y APROBACIONES</div>
+        <div class="signature-area">
+            <div class="signature-box">
+                <p>Realizó Producción</p>
+                <input type="text" placeholder="Nombre y Firma">
+                <p>Operador Banco</p>
+            </div>
+            <div class="signature-box">
+                <p>Verificó Acondicionamiento</p>
+                <input type="text" placeholder="Nombre y Firma">
+                <p>Supervisor / Calidad</p>
+            </div>
+            <div class="signature-box">
+                <p>Liberación Final de Lote</p>
+                <input type="text" placeholder="Nombre y Firma">
+                <p>Responsable Sanitario</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            FO-LC-29 | Versión: 1.0 | Hoja de Producción Lote Celular | Xelle Scientific
+        </div>
     </div>
 
     <script>
-        const productRules = {
-            'STEM': { prefix: 'XCM', days: 4 }, 'ORTHO': { prefix: 'XOR', days: 4 },
-            'HYBRID': { prefix: 'XHY', days: 4 }, 'HYBRID_ORTHO': { prefix: 'XHO', days: 4 }
+        // Lógica para agregar filas dinámicas
+        function addProductRow() {
+            const table = document.getElementById('tbl-productos').getElementsByTagName('tbody')[0];
+            const newRow = table.rows[0].cloneNode(true);
+            clearInputs(newRow);
+            table.appendChild(newRow);
+        }
+
+        function addTrazaRow() {
+            const table = document.getElementById('tbl-trazabilidad').getElementsByTagName('tbody')[0];
+            const newRow = table.rows[0].cloneNode(true);
+            clearInputs(newRow);
+            table.appendChild(newRow);
+        }
+
+        function addAcondRow() {
+            const table = document.getElementById('tbl-acondicionamiento').getElementsByTagName('tbody')[0];
+            const newRow = table.rows[0].cloneNode(true);
+            clearInputs(newRow);
+            table.appendChild(newRow);
+        }
+
+        function removeRow(btn) {
+            const row = btn.parentNode.parentNode;
+            const tbody = row.parentNode;
+            if(tbody.rows.length > 1) {
+                tbody.removeChild(row);
+            } else {
+                clearInputs(row); // Si es la última, solo limpiar
+            }
+        }
+
+        function clearInputs(row) {
+            const inputs = row.querySelectorAll('input, select');
+            inputs.forEach(input => input.value = '');
+        }
+
+        // Lógica de Impresión (Ocultar vacíos)
+        window.onbeforeprint = function() {
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                let isEmpty = true;
+                const inputs = row.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    if(input.value.trim() !== "") isEmpty = false;
+                });
+                
+                // Si está vacío y NO es la primera fila (para no dejar la tabla sin headers), ocultar
+                if(isEmpty && row.rowIndex > 1) { 
+                    row.classList.add('print-hidden');
+                }
+            });
         };
 
-        function updateProductLogic() {
-            const code = document.getElementById('prod-select').value;
-            const dateStr = document.getElementById('fecha-fab').value;
-            if (!code || !productRules[code] || !dateStr) return;
-            
-            const rule = productRules[code];
-            const dateObj = new Date(dateStr);
-            const userTimezoneOffset = dateObj.getTimezoneOffset() * 60000;
-            const localDate = new Date(dateObj.getTime() + userTimezoneOffset);
-
-            if(!document.getElementById('lote-auto').value) {
-                const yy = String(localDate.getFullYear()).slice(2);
-                const mm = String(localDate.getMonth() + 1).padStart(2, '0');
-                const dd = String(localDate.getDate()).padStart(2, '0');
-                document.getElementById('lote-auto').value = `${rule.prefix}${yy}${mm}${dd}`;
-            }
-
-            let expDate = new Date(localDate);
-            expDate.setDate(expDate.getDate() + rule.days);
-            
-            const e_yyyy = expDate.getFullYear();
-            const e_mm = String(expDate.getMonth() + 1).padStart(2, '0');
-            const e_dd = String(expDate.getDate()).padStart(2, '0');
-            document.getElementById('fecha-venc').value = `${e_yyyy}-${e_mm}-${e_dd}`;
-        }
-
-        function calcTotalCells() {
-            const conc = parseFloat(document.getElementById('cell-conc').value) || 0;
-            const vol = parseFloat(document.getElementById('lot-vol').value) || 0;
-            document.getElementById('total-cells').value = (conc * vol).toFixed(2);
-        }
-
-        // Nueva lógica para sumar la tabla de presentaciones
-        function calcTotalTeorico() {
-            let total = 0;
-            document.querySelectorAll('.qty-pres').forEach(input => {
-                total += parseFloat(input.value) || 0;
-            });
-            document.getElementById('total-teorico-global').value = total;
-            calcYield(); // Recalcular rendimiento
-        }
-
-        function calcYield() {
-            const teo = parseFloat(document.getElementById('total-teorico-global').value);
-            const real = parseFloat(document.getElementById('cant-real').value);
-            const res = (teo > 0 && real >= 0) ? ((real / teo) * 100).toFixed(2) + '%' : '';
-            document.getElementById('yield-percent').value = res;
-        }
-
-        function addPresRow() {
-            const tbody = document.getElementById('tbl-presentaciones').querySelector('tbody');
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>
-                    <select class="cedit">
-                        <option value="">- Seleccione -</option>
-                        <option value="10 M">10 M</option>
-                        <option value="25 M">25 M</option>
-                        <option value="50 M">50 M</option>
-                        <option value="100 M">100 M</option>
-                        <option value="10M + 1B">10M + 1B</option>
-                    </select>
-                </td>
-                <td><input type="number" class="cedit qty-pres" oninput="calcTotalTeorico()" placeholder="0"></td>
-                <td class="no-print"><button class="btn btn-danger btn-mini" onclick="this.closest('tr').remove(); calcTotalTeorico()">x</button></td>
-            `;
-            tbody.appendChild(row);
-        }
-
-        function addCompRow() {
-            const tbody = document.getElementById('tbl-componentes').querySelector('tbody');
-            const row = document.createElement('tr');
-            row.innerHTML = `<td><input class="cedit" placeholder="Comp..."></td><td><input class="cedit" placeholder="Prov..."></td><td><input class="cedit" placeholder="Lot..."></td><td><input type="date" class="cedit"></td><td><input type="number" class="cedit" placeholder="0"></td><td><input class="cedit" placeholder="Ud"></td><td class="no-print"><button class="btn btn-danger btn-mini" onclick="this.closest('tr').remove()">x</button></td>`;
-            tbody.appendChild(row);
-        }
-        function addMatRow() {
-            const tbody = document.getElementById('tbl-materiales').querySelector('tbody');
-            const row = document.createElement('tr');
-            row.innerHTML = `<td><input class="cedit" placeholder="Prod..."></td><td><select class="cedit"><option>Envase Prim</option><option>Envase Sec</option><option>Otros</option></select></td><td><input class="cedit" placeholder="Lote"></td><td><input type="date" class="cedit"></td><td><input type="number" class="cedit" placeholder="Cant"></td><td class="no-print"><button class="btn btn-danger btn-mini" onclick="this.closest('tr').remove()">x</button></td>`;
-            tbody.appendChild(row);
-        }
-        function addControlRow() {
-            const tbody = document.getElementById('tbl-control').querySelector('tbody');
-            const idNum = tbody.children.length + 1;
-            const row = document.createElement('tr');
-            row.innerHTML = `<td><input type="number" class="cedit text-center" value="${idNum}"></td><td><textarea class="cedit" rows="2" placeholder="Parámetro..."></textarea></td><td><input class="cedit" placeholder="Cód"></td><td><input class="cedit" placeholder="Espec"></td><td><input class="cedit" placeholder="Res"></td><td><input class="cedit" placeholder="Obs"></td><td><input class="cedit" placeholder="Resp"></td><td class="no-print"><button class="btn btn-danger btn-mini" onclick="this.closest('tr').remove()">x</button></td>`;
-            tbody.appendChild(row);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => { 
-            addPresRow();
-            addCompRow(); 
-            addMatRow(); 
-            addControlRow(); 
-        });
+        window.onafterprint = function() {
+            const rows = document.querySelectorAll('tr.print-hidden');
+            rows.forEach(row => row.classList.remove('print-hidden'));
+        };
     </script>
 </body>
 </html>
